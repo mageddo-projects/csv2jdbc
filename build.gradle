@@ -10,6 +10,7 @@ plugins {
   // Apply the java-library plugin for API and implementation separation.
   id 'java-library'
   id "antlr"
+  id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 repositories {
@@ -50,3 +51,8 @@ compileTestJava {
   sourceCompatibility = JavaVersion.VERSION_17
   targetCompatibility = JavaVersion.VERSION_17
 }
+
+shadowJar {
+  relocate 'org.apache.commons.csv', 'com.mageddo.thirdparty.org.apache.commons.csv'
+}
+assemble.dependsOn shadowJar
