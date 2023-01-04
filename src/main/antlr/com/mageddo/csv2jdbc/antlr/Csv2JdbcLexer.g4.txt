@@ -1,0 +1,7 @@
+lexer grammar Csv2JdbcLexer;
+
+
+options {
+   superClass = Csv2JdbcLexerBase;
+   caseInsensitive = true;
+}
