@@ -42,7 +42,7 @@ public class Csv2JdbcConverter {
             case 1:
               return new Option(it.getText());
             case 2:
-              return new Option(it.getChild(0).getText(), clearStr(it.getChild(1)));
+              return new Option(it.getChild(0).getText(), clearStr(it.getChild(1), "'"));
             default:
               throw new UnsupportedOperationException(String.valueOf(it.getChildCount()));
           }
@@ -54,7 +54,7 @@ public class Csv2JdbcConverter {
     return CopyCsvStatement
         .builder()
         .command(Command.valueOf(Objects.firstNonNull(stm.copy_from(), stm.TO()).getText()))
-        .file(Paths.get(clearStr(stm.copy_file_name())))
+        .file(Paths.get(clearStr(stm.copy_file_name(), "'")))
         .options(options)
 
         // from
@@ -62,7 +62,7 @@ public class Csv2JdbcConverter {
         .cols(tableCols)
 
         // to
-        .extractSql(Objects.mapOrNull(stm.preparablestmt(), ParseTree::getText))
+        .extractSql(Objects.mapOrNull(stm.preparablestmt(), it -> clearStr(it, "\\(", "\\)")))
         .build()
         .validateIsCsv();
 
@@ -89,8 +89,12 @@ public class Csv2JdbcConverter {
         .collect(Collectors.toList());
   }
 
-  private static String clearStr(ParseTree o) {
-    return o.getText().replaceAll("^'", "").replaceAll("'$", "");
+  static String clearStr(ParseTree o, CharSequence c) {
+    return StringUtils.removeFromStartEnd(o.getText(), c);
+  }
+
+  static String clearStr(ParseTree o, CharSequence c, CharSequence e) {
+    return StringUtils.removeFromStartEnd(o.getText(), c, e);
   }
 
 }

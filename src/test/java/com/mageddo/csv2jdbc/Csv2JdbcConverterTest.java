@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class Csv2JdbcConverterTest {
@@ -57,7 +58,11 @@ class Csv2JdbcConverterTest {
 
     // arrange
     final var stmt = """
-        CSV2J COPY ( abc )
+        CSV2J COPY (
+          SELECT
+            IDT_FRUIT_TABLE, DAT_CREATED, FLG_ACTIVE
+          FROM FRUIT_TABLE
+        )
         TO '/tmp/fruit.csv'
         WITH HEADER DELIMITER ';' CSV
         """;
@@ -67,10 +72,20 @@ class Csv2JdbcConverterTest {
 
     // assert
     assertEquals(Command.TO, csvStatement.getCommand());
-    assertEquals("", csvStatement.getExtractSql());
+    assertEquals(
+        """
+            SELECT
+                IDT_FRUIT_TABLE, DAT_CREATED, FLG_ACTIVE
+              FROM FRUIT_TABLE
+            """.trim(),
+        csvStatement.getExtractSql().trim()
+    );
+    assertEquals(';', csvStatement.getDelimiter());
+    assertNull(csvStatement.getTableName());
+    assertFalse(csvStatement.mustCreateTable());
     assertEquals("[]", csvStatement.getCols().toString());
+    assertEquals("/tmp/fruit.csv", String.valueOf(csvStatement.getFile()));
+    assertEquals("UTF-8", csvStatement.getCharset().displayName());
+    assertTrue(csvStatement.hasHeader());
   }
-//  SELECT
-//      IDT_FRUIT_TABLE, DAT_CREATED, FLG_ACTIVE
-//  FROM FRUIT_TABLE
 }

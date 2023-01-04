@@ -27,19 +27,8 @@ stmt
    ;
 
 preparablestmt
-//  : selectstmt
-//   : OPEN_PAREN AnyStatement CLOSE_PAREN
-   : AnyStatement
+  : PreparableStmt
   ;
-
-selectstmt
-   : anyStmt
-   ;
-
-anyStmt
-  : AnyStatement
-  ;
-
 
 opt_column_list
    : OPEN_PAREN columnlist CLOSE_PAREN
@@ -156,28 +145,23 @@ COMMA
   : ','
   ;
 
-AnyStatement
-//  : (AnyChar | WS)+
-  : '(' ~(')')+ ')'
-//  : StringConstant
-//  | WHITESPACE
+PreparableStmt
+  : OPEN_PAREN (AnyChar)+ CLOSE_PAREN
   ;
 
 EscapeString
   : '\''  ~('\'')* '\''
   ;
 
-
-
 StringConstant
   : [A-Za-z_]+
   ;
-
 
 fragment AnyChar
   : .
 //  : [\u0000-\u00FF]
   ;
+
 
 
 WS
