@@ -25,6 +25,9 @@ public class Csv2JdbcDriver implements Driver {
       PROP_DELEGATE_DRIVER_CLASSNAME
   ));
 
+  public static final String URL_PREFIX = "jdbc:csv2jdbc:";
+
+
   static {
     try {
       DriverManager.registerDriver(new Csv2JdbcDriver());
@@ -32,8 +35,6 @@ public class Csv2JdbcDriver implements Driver {
       throw new RuntimeException("Driver registering failed: " + e.getMessage());
     }
   }
-
-  public static final String URL_PREFIX = "jdbc:csv2jdbc:";
 
   private PrintWriter log;
   private Driver delegate;
@@ -56,7 +57,7 @@ public class Csv2JdbcDriver implements Driver {
         "status=createdProxyDriver, delegateDriverClassName=%s, delegateUrl=%s",
         delegateDriverClassName, delegateUrl
     );
-    return new ProxiedConnection(this.delegate.connect(delegateUrl, info));
+    return new Csv2JdbcConnection(this.delegate.connect(delegateUrl, info));
   }
 
   private static String toDelegateUrl(String url) {
