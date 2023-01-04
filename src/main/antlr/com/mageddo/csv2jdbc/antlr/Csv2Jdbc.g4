@@ -16,14 +16,28 @@ csv2j
   : stmt EOF
   ;
 
+copystmt
+   : COPY qualified_name opt_column_list copy_from copy_file_name opt_with copy_options
+//   | COPY OPEN_PAREN preparablestmt CLOSE_PAREN TO copy_file_name opt_with copy_options
+   | COPY OPEN_PAREN preparablestmt CLOSE_PAREN TO copy_file_name opt_with copy_options
+   ;
+
 stmt
    : copystmt
    ;
 
-copystmt
-   : COPY qualified_name opt_column_list copy_from copy_file_name opt_with copy_options
-// opt_with copy_options
+preparablestmt
+   : selectstmt
+  ;
+
+selectstmt
+   : anyStmt
    ;
+
+anyStmt
+  : AnyStatement
+  ;
+
 
 opt_column_list
    : OPEN_PAREN columnlist CLOSE_PAREN
@@ -75,6 +89,7 @@ copy_opt_item
    | CREATE_TABLE
    | ENCODING sconst
    ;
+
 //   : BINARY
 //   | FREEZE
 //   | NULL_P sconst
@@ -85,6 +100,10 @@ copy_opt_item
 //   | FORCE NOT NULL_P columnlist
 //   | FORCE NULL_P columnlist
 //   | ENCODING sconst
+
+//fragment AnyChar
+//  : [\u0000-\uFFFE]+
+//  ;
 
 CSV
   : 'CSV'
@@ -122,9 +141,6 @@ TO
   : 'TO'
   ;
 
-StringConstant
-  : [A-Za-z]+
-  ;
 
 OPEN_PAREN
    : '('
@@ -142,7 +158,29 @@ COMMA
   : ','
   ;
 
+AnyStatement
+  : StringConstant
+//  : (AnyChar | WS)+
+//  | WHITESPACE
+  ;
+
+StringConstant
+  : [A-Za-z_]+
+  ;
+
+fragment AnyChar
+  : .
+//  : [\u0000-\u00FF]
+  ;
+
 
 WS
-   : [ \t\n\r] + -> skip
+   :  [ \t\n\r] + -> skip
    ;
+
+//WHITESPACE
+//  :
+//  ;
+
+
+
