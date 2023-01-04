@@ -1,16 +1,17 @@
 package com.mageddo.csv2jdbc;
 
+import java.sql.DriverManager;
+
 import org.jdbi.v3.core.Jdbi;
 import org.junit.jupiter.api.Test;
-
-import java.sql.DriverManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class Csv2JdbcDriverTest {
 
-  public static final String JDBC_URL = "jdbc:csv2jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1?delegateDriverClassName=org.h2.Driver";
+  public static final String JDBC_URL = "jdbc:csv2jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1?delegateDriverClassName=org.h2" +
+      ".Driver";
 
   static {
     try {
@@ -48,7 +49,8 @@ class Csv2JdbcDriverTest {
     // act
     jdbi.useHandle(h -> {
       final var r = h
-          .createUpdate("CSV2J COPY MOVS FROM '/home/typer/.mageddo/ipca/ipca-series.csv' WITH CSV HEADER CREATE_TABLE DELIMITER ','")
+          .createUpdate("CSV2J COPY MOVS FROM '/home/typer/.mageddo/ipca/ipca-series.csv' WITH CSV HEADER " +
+              "CREATE_TABLE DELIMITER ','")
           .execute();
       assertEquals(109, r);
     });
@@ -63,6 +65,32 @@ class Csv2JdbcDriverTest {
           });
     });
 
+
+  }
+
+  @Test
+  void mustExtractQueryToCsv() {
+
+    // arrange
+    final var jdbi = Jdbi.create(JDBC_URL, "SA", "");
+
+    // act
+    // assert
+    jdbi.useHandle(h -> {
+      final var updated = h
+          .createUpdate("""
+              CSV2J COPY (
+                SELECT 1 AS ID, 10.99 AS AMOUNT, TIMESTAMP '2022-01-31 23:59:58.987' AS DAT_CREATION
+                UNION ALL
+                SELECT 2 AS ID, 7.50 AS AMOUNT, TIMESTAMP '2023-01-31 21:59:58.987' AS DAT_CREATION
+              ) TO '/Users/elfreitas/Documents/test.csv' WITH CSV HEADER
+              """
+          )
+          .execute();
+      assertEquals(2, updated);
+    });
+
+    // todo assert file content
 
   }
 

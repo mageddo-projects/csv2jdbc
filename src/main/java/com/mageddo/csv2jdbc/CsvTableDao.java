@@ -1,13 +1,16 @@
 package com.mageddo.csv2jdbc;
 
-import org.apache.commons.csv.CSVRecord;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import com.mageddo.csv2jdbc.Csv2JdbcPreparedStatement.Consumer;
+
+import org.apache.commons.csv.CSVRecord;
 
 public class CsvTableDao {
 
@@ -17,6 +20,16 @@ public class CsvTableDao {
     final String sql = String.format("CREATE TABLE %s (\n %s \n)", tableName, buildColDDL(cols));
     try (PreparedStatement stm = connection.prepareStatement(sql)) {
       stm.executeUpdate();
+    }
+  }
+
+  public static int streamSelect(Connection conn, String sql, Consumer<ResultSet> c) throws Exception {
+    try (PreparedStatement stm = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+      stm.setFetchSize(1024);
+      try (final ResultSet rs = stm.executeQuery()) {
+        c.accept(rs);
+        return rs.getRow();
+      }
     }
   }
 
@@ -37,7 +50,7 @@ public class CsvTableDao {
         int colI = 1;
         for (String colVal : r) {
           final Column columnMetadata = columns.get(cols.get(colI - 1).toLowerCase());
-          if(colVal == null){
+          if (colVal == null) {
             stm.setNull(colI++, columnMetadata.getType());
           } else {
             stm.setObject(colI++, colVal, columnMetadata.getType());
@@ -49,7 +62,8 @@ public class CsvTableDao {
     }
   }
 
-  protected static List<String> buildColNames(Connection connection, List<String> cols, List<String> headerNames, String table) {
+  protected static List<String> buildColNames(Connection connection, List<String> cols, List<String> headerNames,
+      String table) {
     if (cols != null && !cols.isEmpty()) {
       return cols;
     }
@@ -67,7 +81,8 @@ public class CsvTableDao {
   }
 
   static String buildBinds(List<String> params) {
-    return params.stream()
+    return params
+        .stream()
         .map(it -> "?")
         .collect(Collectors.joining(PARAM_SEPARATOR));
   }
@@ -85,4 +100,5 @@ public class CsvTableDao {
         .replaceAll("(^[^a-zA-Z])+", "c$1")
         .replaceAll("([^a-zA-Z]+$)", "c$1");
   }
+
 }
