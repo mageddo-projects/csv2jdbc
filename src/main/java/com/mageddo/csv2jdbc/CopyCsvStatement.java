@@ -26,6 +26,7 @@ import java.sql.PreparedStatement;
  */
 public class CopyCsvStatement {
   public static PreparedStatement of(String sql, Connection conn) {
+
     throw new UnsupportedOperationException();
   }
 }

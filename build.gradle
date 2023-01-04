@@ -9,6 +9,7 @@
 plugins {
     // Apply the java-library plugin for API and implementation separation.
     id 'java-library'
+    id "antlr"
 }
 
 repositories {
@@ -20,6 +21,11 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
+
+    antlr("org.antlr:antlr4:4.8")
+
+    api("org.antlr:antlr4-runtime:4.8")
+    implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.9.0'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
