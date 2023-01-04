@@ -1,4 +1,4 @@
-grammar Csv2JdbcParser;
+grammar Csv2Jdbc;
 
 // CSV2J COPY :tableName FROM :csvPath WITH DELIMITER ';' CSV CREATE_TABLE
 
@@ -22,30 +22,7 @@ stmt
 
 copystmt
    : COPY qualified_name opt_column_list copy_from copy_file_name opt_with copy_options
-   ;
-
-copy_options
-   : copy_opt_list
-   ;
-
-copy_opt_list
-   : copy_opt_item*
-   ;
-
-copy_opt_item
-   : DELIMITER sconst
-   | CSV
-   | HEADER
-//   : BINARY
-//   | FREEZE
-//   | NULL_P sconst
-//   | QUOTE sconst
-//   | ESCAPE sconst
-//   | FORCE QUOTE columnlist
-//   | FORCE QUOTE STAR
-//   | FORCE NOT NULL_P columnlist
-//   | FORCE NULL_P columnlist
-//   | ENCODING sconst
+// opt_with copy_options
    ;
 
 opt_column_list
@@ -67,7 +44,7 @@ copy_from
    ;
 
 copy_file_name
-   : qualified_name
+   : sconst
    ;
 
 qualified_name
@@ -76,12 +53,48 @@ qualified_name
 
 sconst
     : StringConstant
-    |
+    | EscapeString
     ;
 
 opt_with
    : WITH
    ;
+
+copy_options
+   : copy_opt_list
+   ;
+
+copy_opt_list
+   : copy_opt_item*
+   ;
+
+copy_opt_item
+//   : DELIMITER sconst
+   : CSV
+   | HEADER
+   ;
+//   : BINARY
+//   | FREEZE
+//   | NULL_P sconst
+//   | QUOTE sconst
+//   | ESCAPE sconst
+//   | FORCE QUOTE columnlist
+//   | FORCE QUOTE STAR
+//   | FORCE NOT NULL_P columnlist
+//   | FORCE NULL_P columnlist
+//   | ENCODING sconst
+
+CSV
+  : 'CSV'
+  ;
+
+HEADER
+  : 'HEADER'
+  ;
+
+WITH
+  : 'WITH'
+  ;
 
 COPY
    : 'CSV2JCOPY'
@@ -96,7 +109,7 @@ TO
   ;
 
 StringConstant
-  : [A-Z]+
+  : [A-Za-z]+
   ;
 
 OPEN_PAREN
@@ -111,22 +124,16 @@ EscapeString
   : '\''  ~('\'')* '\''
   ;
 
+COMMA
+  : ','
+  ;
+
 DELIMITER
   : 'DELMITER'
   ;
 
-CSV
-  : 'CSV'
-  ;
 
-HEADER
-  : 'HEADER'
-  ;
 
-COMMA
-  : 'COMMA'
-  ;
-
-WITH
-  : 'WITH'
-  ;
+WS
+   : [ \t\n\r] + -> skip
+   ;
