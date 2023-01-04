@@ -54,7 +54,7 @@ public class Csv2JdbcDriver implements Driver {
     this.delegate = Reflections.createInstance(delegateDriverClassName);
     final String delegateUrl = toDelegateUrl(url); // fixme clear this driver parameters
     log.format(
-        "status=createdProxyDriver, delegateDriverClassName=%s, delegateUrl=%s",
+        "status=createdProxyDriver, delegateDriverClassName=%s, delegateUrl=%s%n",
         delegateDriverClassName, delegateUrl
     );
     return new Csv2JdbcConnection(this.delegate.connect(delegateUrl, info));

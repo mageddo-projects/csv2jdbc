@@ -48,16 +48,22 @@ class Csv2JdbcDriverTest {
     // act
     jdbi.useHandle(h -> {
       final var r = h
-          .createUpdate("CSV2J COPY :tableName FROM :csvPath WITH DELIMITER ';' CSV CREATE_TABLE")
-          .bind("tableName", "TEMP")
-          .bind("csvName", "/tmp/csv.csv")
+          .createUpdate("CSV2J COPY MOVS FROM '/home/typer/.mageddo/ipca/ipca-series.csv' WITH CSV HEADER CREATE_TABLE DELIMITER ','")
           .execute();
-      System.out.println(r);
-
-      assertEquals(5, r);
+      assertEquals(109, r);
     });
 
     // assert
+
+    jdbi.useHandle(h -> {
+      h
+          .createQuery("SELECT * FROM MOVS").mapToMap()
+          .forEach(o -> {
+            System.out.println(o);
+          });
+    });
+
+
   }
 
 }

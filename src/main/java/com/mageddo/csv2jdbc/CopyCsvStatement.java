@@ -1,16 +1,25 @@
 package com.mageddo.csv2jdbc;
 
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+
+import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Map;
 
 /**
- *
  * Syntax is inspired in https://www.postgresql.org/docs/current/sql-copy.html .
  *
  * <ol>
  *   <li><strong><code>,</code></strong> (comma), is the default delimiter</li>
  * </ol>
- *
+ * <p>
  * Examples:
  *
  * <code><pre>
@@ -24,9 +33,76 @@ import java.sql.PreparedStatement;
  *   CSV2J COPY :tableName FROM :csvPath WITH DELIMITER ';' CSV CREATE_TABLE
  * </pre></code>
  */
-public class CopyCsvStatement {
-  public static PreparedStatement of(String sql, Connection conn) {
 
-    throw new UnsupportedOperationException();
+@ToString
+@Getter
+@Builder(access = AccessLevel.PROTECTED)
+public class CopyCsvStatement {
+
+  private String tableName;
+  private Path file;
+  private List<String> cols;
+  private Map<String, Option> options;
+
+  public Charset getCharset() {
+    return Charset.forName(this.getOptionOrDefault(Option.ENCODING, Option.DEFAULT_ENCODING).getValue());
+  }
+
+  public char getDelimiter() {
+    return this.getOptionOrDefault(Option.DELIMITER, Option.DEFAULT_DELIMITER).getValue().charAt(0);
+  }
+
+  public boolean hasHeader() {
+    return this.getOptionOrDefault(Option.HEADER, null) != null;
+  }
+
+  public boolean mustCreateTable() {
+    return  this.getOptionOrDefault(Option.CREATE_TABLE, null) != null;
+  }
+
+  Option getOptionOrDefault(String k, Option defaultV) {
+    return this.options.getOrDefault(k, defaultV);
+  }
+
+  @Getter
+  @ToString
+  @EqualsAndHashCode(of = "name")
+  public static class Option {
+
+    public static final String HEADER = "HEADER";
+
+    public static final String DELIMITER = "DELIMITER";
+
+    public static final String CSV = "CSV";
+
+    public static final String CREATE_TABLE = "CREATE_TABLE";
+
+    public static final String ENCODING = "ENCODING";
+
+    public static final Option DEFAULT_CSV = new Option(CSV);
+    public static final Option DEFAULT_HEADER = new Option(HEADER);
+
+    public static final Option DEFAULT_DELIMITER = new Option(DELIMITER, ",");
+
+    public static final Option DEFAULT_CREATE_TABLE = new Option(CREATE_TABLE);
+
+    public static final Option DEFAULT_ENCODING = new Option(ENCODING, "utf-8");
+
+    private final String name;
+    private final String value;
+
+    public Option(String name) {
+      this.value = null;
+      this.name = name;
+    }
+
+    public Option(String name, String value) {
+      this.name = name;
+      this.value = value;
+    }
+  }
+
+  public static PreparedStatement of(String sql, Connection conn) {
+    return new Csv2JdbcPreparedStatement(CopyConverter.of(sql), conn);
   }
 }

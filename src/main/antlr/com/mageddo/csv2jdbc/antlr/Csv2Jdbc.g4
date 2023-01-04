@@ -69,9 +69,11 @@ copy_opt_list
    ;
 
 copy_opt_item
-//   : DELIMITER sconst
-   : CSV
+   : DELIMITER sconst
+   | CSV
    | HEADER
+   | CREATE_TABLE
+   | ENCODING sconst
    ;
 //   : BINARY
 //   | FREEZE
@@ -92,12 +94,24 @@ HEADER
   : 'HEADER'
   ;
 
+DELIMITER
+  : 'DELIMITER'
+  ;
+
+CREATE_TABLE
+  : 'CREATE_TABLE'
+  ;
+
+ENCODING
+    : 'ENCODING'
+    ;
+
 WITH
   : 'WITH'
   ;
 
 COPY
-   : 'CSV2JCOPY'
+   : 'CSV2J COPY'
    ;
 
 FROM
@@ -127,11 +141,6 @@ EscapeString
 COMMA
   : ','
   ;
-
-DELIMITER
-  : 'DELMITER'
-  ;
-
 
 
 WS
