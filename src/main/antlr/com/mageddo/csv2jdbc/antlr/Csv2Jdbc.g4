@@ -19,7 +19,7 @@ csv2j
 copystmt
    : COPY qualified_name opt_column_list copy_from copy_file_name opt_with copy_options
 //   | COPY OPEN_PAREN preparablestmt CLOSE_PAREN TO copy_file_name opt_with copy_options
-   | COPY OPEN_PAREN preparablestmt CLOSE_PAREN TO copy_file_name opt_with copy_options
+   | COPY preparablestmt TO copy_file_name opt_with copy_options
    ;
 
 stmt
@@ -27,7 +27,9 @@ stmt
    ;
 
 preparablestmt
-   : selectstmt
+//  : selectstmt
+//   : OPEN_PAREN AnyStatement CLOSE_PAREN
+   : AnyStatement
   ;
 
 selectstmt
@@ -150,23 +152,27 @@ CLOSE_PAREN
    : ')'
    ;
 
-EscapeString
-  : '\''  ~('\'')* '\''
-  ;
-
 COMMA
   : ','
   ;
 
 AnyStatement
-  : StringConstant
 //  : (AnyChar | WS)+
+  : '(' ~(')')+ ')'
+//  : StringConstant
 //  | WHITESPACE
   ;
+
+EscapeString
+  : '\''  ~('\'')* '\''
+  ;
+
+
 
 StringConstant
   : [A-Za-z_]+
   ;
+
 
 fragment AnyChar
   : .
