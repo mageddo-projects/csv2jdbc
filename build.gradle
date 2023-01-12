@@ -53,10 +53,11 @@ dependencies {
   testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
-  testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
   testImplementation 'org.jdbi:jdbi3-core:3.36.0'
-  testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.5'
 
+  testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
+  testImplementation group: 'org.postgresql', name: 'postgresql', version: '9.4.1212'
+  testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
 
 }
 

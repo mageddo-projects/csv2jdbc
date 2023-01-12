@@ -9,7 +9,6 @@ import java.sql.DriverManager;
 
 import org.h2.util.IOUtils;
 import org.jdbi.v3.core.Jdbi;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -145,29 +144,6 @@ class Csv2JdbcDriverTest {
 
     // todo assert file content
 
-  }
-
-
-  @Disabled
-  @Test
-  void mustImportCsvTosssTable(@TempDir Path tempDir) throws Exception {
-
-    // arrange
-    final var jdbi = Jdbi.create(JDBC_URL, "SA", "");
-
-    // act
-    jdbi.useHandle(h -> {
-      final var r = h
-          .createUpdate(String.format(
-              "CSV2J COPY MOVS FROM '%s' WITH CSV HEADER CREATE_TABLE DELIMITER ';'",
-              "/Users/elfreitas/Documents/csv/2022-08-analitico-usuario.csv"
-          ))
-          .execute();
-
-      System.out.println("executed: " + r);
-    });
-
-    // assert
   }
 
   private void copy(String source, Path target) throws IOException {

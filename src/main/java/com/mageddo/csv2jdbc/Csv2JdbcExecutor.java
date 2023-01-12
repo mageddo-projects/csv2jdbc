@@ -77,6 +77,7 @@ public class Csv2JdbcExecutor {
 
         if (buffRemaning.get() <= 0) {
           CsvTableDao.rawInsertData(this.connection, this.csvStm, buff, cols);
+//          CsvTableDao.insertData(this.connection, this.csvStm, buff, cols);
           buff.clear();
           buffRemaning.set(bufferSize - recordSize);
         }
@@ -85,6 +86,7 @@ public class Csv2JdbcExecutor {
 
       if (!buff.isEmpty()) {
         CsvTableDao.rawInsertData(this.connection, this.csvStm, buff, cols);
+//        CsvTableDao.insertData(this.connection, this.csvStm, buff, cols);
       }
       return i;
     } catch (IOException e) {
