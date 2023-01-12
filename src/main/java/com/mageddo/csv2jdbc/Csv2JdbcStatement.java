@@ -8,8 +8,6 @@ import static com.mageddo.csv2jdbc.Csv2JdbcConnection.isCsv2JCopy;
 
 public class Csv2JdbcStatement extends ProxiedStatement {
 
-  private int updatedCount;
-
   public Csv2JdbcStatement(Statement delegate) {
     super(delegate);
   }

@@ -28,7 +28,7 @@ class Csv2JdbcDriverTest {
   }
 
   @Test
-  void mustConnectAndDelegateSelectFromH2UsingVanillaJava() throws Exception {
+  void mustConnectAndDelegateSelectFromH2UsingVanillaJavaAndPreparedStatment() throws Exception {
 
     // arrange
 
@@ -44,6 +44,25 @@ class Csv2JdbcDriverTest {
       assertEquals(9, rs.getInt("ID"));
     }
 
+  }
+
+  @Test
+  void mustCopyCsvToTableUsingStatement() throws Exception {
+
+    // arrange
+
+    // act
+    final var conn = DriverManager.getConnection(JDBC_URL, "SA", "");
+    final var file = "/Users/elfreitas/Documents/csv/relatorio-contabil-usuario-2022-09.csv";
+
+    final var stm = conn.createStatement();
+    final var executed = stm.execute(String.format(
+        "CSV2J COPY MOVS FROM '%s' WITH CSV HEADER CREATE_TABLE DELIMITER ';'",
+        file
+    ));
+
+    // assert
+    assertTrue(executed);
   }
 
   @Test

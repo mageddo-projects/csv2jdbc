@@ -18,26 +18,31 @@ public class Csv2JdbcExecutor {
   private final Connection connection;
   private final CopyCsvStatement csvStm;
 
-  public Csv2JdbcExecutor(Connection conn, String sql){
+  public Csv2JdbcExecutor(Connection conn, String sql) {
     this.connection = conn;
     this.csvStm = Csv2JdbcConverter.of(sql);
   }
 
   public int execute() throws SQLException {
-    switch (csvStm.getCommand()) {
-      case FROM:
-        return this.loadCsvIntoTable();
-      case TO:
-        return this.extractQueryToCsv();
-      default:
-        throw new UnsupportedOperationException(String.format("invalid option: %s", this.csvStm.getCommand()));
+    try {
+      switch (csvStm.getCommand()) {
+        case FROM:
+          return this.loadCsvIntoTable();
+        case TO:
+          return this.extractQueryToCsv();
+        default:
+          throw new UnsupportedOperationException(String.format("invalid option: %s", this.csvStm.getCommand()));
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw e;
     }
   }
 
   private int extractQueryToCsv() throws SQLException {
     try {
       CsvTableDao.streamSelect(this.connection, this.csvStm.getExtractSql(), (rs) -> {
-        try(final CSVPrinter printer = this.createCsvPrinter()){
+        try (final CSVPrinter printer = this.createCsvPrinter()) {
           printer.printRecords(rs, true);
         }
       });
