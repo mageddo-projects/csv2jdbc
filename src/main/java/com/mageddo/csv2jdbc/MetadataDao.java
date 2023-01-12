@@ -17,8 +17,15 @@ import lombok.SneakyThrows;
 public class MetadataDao {
   @SneakyThrows
   public static List<Column> findColumns(Connection c, String table) {
-    final ResultSet rs = c.getMetaData().getColumns(null, null, table.toUpperCase(Locale.ENGLISH), null);
-    return toColumns(rs);
+    List<Column> first = toColumns(toRs(c, table.toUpperCase(Locale.ENGLISH)));
+    if (first.isEmpty()) {
+      return toColumns(toRs(c, table.toLowerCase(Locale.ENGLISH)));
+    }
+    return first;
+  }
+
+  private static ResultSet toRs(Connection c, String table) throws SQLException {
+    return c.getMetaData().getColumns(null, null, table, null);
   }
 
   public static Map<String, Column> findColumnsMap(Connection c, String table) {
