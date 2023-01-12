@@ -19,7 +19,6 @@ class Csv2JdbcDriverTest {
 
   public static final String JDBC_URL =
       "jdbc:csv2jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1?delegateDriverClassName=org.h2.Driver";
-
   static {
     try {
       Class.forName(Csv2JdbcDriver.class.getName());

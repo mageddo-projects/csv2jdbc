@@ -69,13 +69,13 @@ public class Csv2JdbcExecutor {
         i++;
         buff.add(record);
         if (buff.size() % bufSize == 0) {
-          CsvTableDao.insertData(this.connection, this.csvStm, buff, cols);
+          CsvTableDao.rawInsertData(this.connection, this.csvStm, buff, cols);
           buff.clear();
         }
       }
 
       if (!buff.isEmpty()) {
-        CsvTableDao.insertData(this.connection, this.csvStm, buff, cols);
+        CsvTableDao.rawInsertData(this.connection, this.csvStm, buff, cols);
       }
       return i;
     } catch (IOException e) {

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,6 +32,36 @@ public class CsvTableDao {
         return rs.getRow();
       }
     }
+  }
+
+  public static int rawInsertData(
+      Connection connection, CopyCsvStatement csvStm, List<CSVRecord> records, List<String> cols
+  ) throws SQLException {
+    final long start = System.currentTimeMillis();
+    final StringBuilder sql = new StringBuilder(String.format(
+        "INSERT INTO %s (%s) VALUES", csvStm.getTableName(), buildColNamesStr(cols)
+    ));
+    try (Statement stm = connection.createStatement()) {
+
+      for (CSVRecord r : records) {
+        sql.append('(');
+        sql.append(toValues(r));
+        sql.append(')');
+        sql.append(',');
+      }
+      sql.deleteCharAt(sql.length() - 1);
+      int n = stm.executeUpdate(sql.toString());
+      log(String.format("m=rawInsertData, time=%d, n=%d",  System.currentTimeMillis() - start, n));
+      return n;
+    }
+  }
+
+  private static String toValues(CSVRecord r) {
+    return r
+        .stream()
+        .map(it -> String.format("'%s'", it))
+        .collect(Collectors.joining(PARAM_SEPARATOR))
+        ;
   }
 
   public static void insertData(
@@ -104,6 +135,10 @@ public class CsvTableDao {
     return s
         .replaceAll("(^[^a-zA-Z])+", "c$1")
         .replaceAll("([^a-zA-Z]+$)", "c$1");
+  }
+
+  public static void log(String s){
+    System.out.println(s);
   }
 
 }
