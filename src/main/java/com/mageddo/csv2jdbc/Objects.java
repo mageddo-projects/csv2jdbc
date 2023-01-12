@@ -2,6 +2,7 @@ package com.mageddo.csv2jdbc;
 
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class Objects {
   public static <T> T firstNonNull(T... o) {
@@ -18,5 +19,12 @@ public class Objects {
         .ofNullable(o)
         .map(fn)
         .orElse(null);
+  }
+
+  public static <T> T useItOrDefault(T o, Supplier<T> s) {
+    if (o == null) {
+      return s.get();
+    }
+    return o;
   }
 }

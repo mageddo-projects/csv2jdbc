@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -14,6 +15,7 @@ import org.apache.commons.csv.CSVRecord;
 public class Csv2JdbcExecutor {
 
   public static final int HEADER_COUNT = 1;
+  public static final int _50MB_IN_BYTES = 50 * 1024 * 1024;
 
   private final Connection connection;
   private final CopyCsvStatement csvStm;
@@ -61,26 +63,43 @@ public class Csv2JdbcExecutor {
 
       this.createTableIfNeedled(cols);
 
-      final int bufSize = Short.MAX_VALUE;
-      final List<CSVRecord> buff = new ArrayList<>(bufSize);
+      final AtomicInteger bufSize = new AtomicInteger();
+      List<CSVRecord> buff = null;
       int i = 0;
-
       for (final CSVRecord record : csvParser) {
+
         i++;
+        buff = Objects.useItOrDefault(buff, () -> {
+          bufSize.set(this.calcBufSize(record));
+          return new ArrayList<>(bufSize.get());
+        });
+
         buff.add(record);
-        if (buff.size() % bufSize == 0) {
+        if (buff.size() % bufSize.get() == 0) {
           CsvTableDao.rawInsertData(this.connection, this.csvStm, buff, cols);
           buff.clear();
         }
       }
 
-      if (!buff.isEmpty()) {
+      if (buff != null && !buff.isEmpty()) {
         CsvTableDao.rawInsertData(this.connection, this.csvStm, buff, cols);
       }
       return i;
     } catch (IOException e) {
       throw new SQLException(e);
     }
+  }
+
+  private int calcBufSize(CSVRecord record) {
+    return _50MB_IN_BYTES / this.calcRecordSizeInBytes(record);
+  }
+
+  private int calcRecordSizeInBytes(CSVRecord record) {
+    return record
+        .toList()
+        .stream()
+        .mapToInt(String::length)
+        .sum();
   }
 
   void createTableIfNeedled(List<String> cols) throws SQLException {
