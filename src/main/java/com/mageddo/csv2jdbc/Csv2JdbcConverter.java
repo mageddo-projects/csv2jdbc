@@ -16,20 +16,19 @@ import com.mageddo.csv2jdbc.CopyCsvStatement.Option;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 public class Csv2JdbcConverter {
-  private static PostgreSQLParser parserOf(String sql) {
-    return new PostgreSQLParser(new CommonTokenStream(new PostgreSQLLexer(CharStreams.fromString(sql))));
-  }
 
   public static CopyCsvStatement of(String sql) {
+    final PostgreSQLParser parser = new PostgreSQLParser(new CommonTokenStream(new PostgreSQLLexer(
+        CharStreams.fromString(sql)
+    )));
 
-    final PostgreSQLParser parser = parserOf(sql);
     final PostgreSQLParser.CopycsvstmtContext stm = parser
         .stmt()
-        .copycsvstmt()
-        ;
+        .copycsvstmt();
 
     final Map<String, Option> options = stm
         .copy2csv_options()
@@ -61,7 +60,16 @@ public class Csv2JdbcConverter {
         .cols(tableCols)
 
         // to
-        .extractSql(Objects.mapOrNull(stm.preparablestmt(), it -> clearStr(it, "\\(", "\\)")))
+        .extractSql(Objects.mapOrNull(
+            stm.preparablestmt(), it -> {
+              final int start = it.getStart().getStartIndex();
+              final int end = it.getStop().getStopIndex();
+              return it
+                  .selectstmt()
+                  .getStart()
+                  .getInputStream()
+                  .getText(new Interval(start, end));
+            }))
         .build()
         .validateIsCsv();
 
