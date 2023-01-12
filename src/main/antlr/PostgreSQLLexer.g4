@@ -807,6 +807,10 @@ COPY
    : 'COPY'
    ;
 
+CSV2JCOPY
+   : 'CSV2J COPY'
+   ;
+
 COST
    : 'COST'
    ;
@@ -866,6 +870,10 @@ DELIMITER
 DELIMITERS
    : 'DELIMITERS'
    ;
+
+CREATE_TABLE_P
+  : 'CREATE_TABLE'
+  ;
 
 DICTIONARY
    : 'DICTIONARY'

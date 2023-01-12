@@ -72,6 +72,7 @@ stmt
    | commentstmt
    | constraintssetstmt
    | copystmt
+   | copycsvstmt
    | createamstmt
    | createasstmt
    | createassertionstmt
@@ -562,6 +563,14 @@ copystmt
    | COPY OPEN_PAREN preparablestmt CLOSE_PAREN TO opt_program copy_file_name opt_with copy_options
    ;
 
+copycsvstmt
+  : CSV2JCOPY qualified_name opt_column_list copy_from copy_file_name copy_delimiter opt_with copy2csv_options
+  | CSV2JCOPY OPEN_PAREN preparablestmt CLOSE_PAREN TO copy_file_name opt_with copy2csv_options
+//   : CSV2JCOPY qualified_name opt_column_list copy_from copy_file_name opt_with copy_options
+//   | COPY OPEN_PAREN preparablestmt CLOSE_PAREN TO copy_file_name opt_with copy_options
+//   | COPY preparablestmt TO copy_file_name opt_with copy_options
+   ;
+
 copy_from
    : FROM
    | TO
@@ -640,6 +649,23 @@ copy_generic_opt_arg_list
 
 copy_generic_opt_arg_list_item
    : opt_boolean_or_string
+   ;
+
+copy2csv_options
+   : copy2csv_opt_list
+   | OPEN_PAREN copy_generic_opt_list CLOSE_PAREN
+   ;
+
+copy2csv_opt_list
+   : copy2csv_opt_item*
+   ;
+
+copy2csv_opt_item
+   : DELIMITER sconst
+   | CSV
+   | HEADER_P
+   | CREATE_TABLE_P
+   | ENCODING sconst
    ;
 
 createstmt

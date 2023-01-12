@@ -32,3 +32,5 @@ dependency-reduced-pom.xml
 README.html
 
 src/main/gen
+src/main/antlr/*.tokens
+src/main/antlr/gen
