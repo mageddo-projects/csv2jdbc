@@ -15,7 +15,9 @@ import org.apache.commons.csv.CSVRecord;
 public class Csv2JdbcExecutor {
 
   public static final int HEADER_COUNT = 1;
-  public static final int _50MB_IN_BYTES = 50 * 1024 * 1024;
+  public static final int _16MB_IN_BYTES = 16 * 1024 * 1024;
+  public static final int COL_METADATA_SIZE = 3; // duas aspas simples e uma virgula
+  public static final int ROW_METADATA_SIZE = 3; // dois parenteses
 
   private final Connection connection;
   private final CopyCsvStatement csvStm;
@@ -63,25 +65,25 @@ public class Csv2JdbcExecutor {
 
       this.createTableIfNeedled(cols);
 
-      final AtomicInteger bufSize = new AtomicInteger();
-      List<CSVRecord> buff = null;
+      final int bufferSize = this.bufferSize();
+      final AtomicInteger buffRemaning = new AtomicInteger(bufferSize);
+      List<CSVRecord> buff = new ArrayList<>();
       int i = 0;
       for (final CSVRecord record : csvParser) {
 
         i++;
-        buff = Objects.useItOrDefault(buff, () -> {
-          bufSize.set(this.calcBufSize(record));
-          return new ArrayList<>(bufSize.get());
-        });
+        final int recordSize = this.calcRecordSizeInBytes(record);
+        buffRemaning.addAndGet(-recordSize);
 
-        buff.add(record);
-        if (buff.size() % bufSize.get() == 0) {
+        if (buffRemaning.get() <= 0) {
           CsvTableDao.rawInsertData(this.connection, this.csvStm, buff, cols);
           buff.clear();
+          buffRemaning.set(bufferSize - recordSize);
         }
+        buff.add(record);
       }
 
-      if (buff != null && !buff.isEmpty()) {
+      if (!buff.isEmpty()) {
         CsvTableDao.rawInsertData(this.connection, this.csvStm, buff, cols);
       }
       return i;
@@ -90,16 +92,18 @@ public class Csv2JdbcExecutor {
     }
   }
 
-  private int calcBufSize(CSVRecord record) {
-    return _50MB_IN_BYTES / this.calcRecordSizeInBytes(record);
+  private int bufferSize() {
+    return Integer.parseInt(
+        System.getProperty("csv2jdbc.buffSize", String.valueOf(_16MB_IN_BYTES))
+    );
   }
 
   private int calcRecordSizeInBytes(CSVRecord record) {
     return record
         .toList()
         .stream()
-        .mapToInt(String::length)
-        .sum();
+        .mapToInt(it -> it.length() + COL_METADATA_SIZE)
+        .sum() + ROW_METADATA_SIZE;
   }
 
   void createTableIfNeedled(List<String> cols) throws SQLException {

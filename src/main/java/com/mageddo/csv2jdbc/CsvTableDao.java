@@ -15,7 +15,7 @@ import org.apache.commons.csv.CSVRecord;
 
 public class CsvTableDao {
 
-  public static final String PARAM_SEPARATOR = ", ";
+  public static final String PARAM_SEPARATOR = ",";
 
   public static void createTable(Connection connection, String tableName, List<String> cols) throws SQLException {
     final String sql = String.format("CREATE TABLE %s (\n %s \n)", tableName, buildColDDL(cols));
@@ -42,7 +42,7 @@ public class CsvTableDao {
         "INSERT INTO %s (%s) VALUES", csvStm.getTableName(), buildColNamesStr(cols)
     ));
     try (Statement stm = connection.createStatement()) {
-
+      System.out.println();
       for (CSVRecord r : records) {
         sql.append('(');
         sql.append(toValues(r));
@@ -51,7 +51,10 @@ public class CsvTableDao {
       }
       sql.deleteCharAt(sql.length() - 1);
       int n = stm.executeUpdate(sql.toString());
-      log(String.format("m=rawInsertData, time=%d, n=%d",  System.currentTimeMillis() - start, n));
+      Log.log(
+          "m=rawInsertData, time=%d, n=%d, sqlLen=%d",
+          System.currentTimeMillis() - start, n, sql.length()
+      );
       return n;
     }
   }
@@ -135,10 +138,6 @@ public class CsvTableDao {
     return s
         .replaceAll("(^[^a-zA-Z])+", "c$1")
         .replaceAll("([^a-zA-Z]+$)", "c$1");
-  }
-
-  public static void log(String s){
-    System.out.println(s);
   }
 
 }

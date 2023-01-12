@@ -20,9 +20,11 @@ import java.util.logging.Logger;
 public class Csv2JdbcDriver implements Driver {
 
   public static final String PROP_DELEGATE_DRIVER_CLASSNAME = "delegateDriverClassName";
+  public static final String PROP_STM_BUFFER_SIZE = "stmBufferSize";
 
   public static final Set<String> PROPS = new LinkedHashSet<>(Arrays.asList(
-      PROP_DELEGATE_DRIVER_CLASSNAME
+      PROP_DELEGATE_DRIVER_CLASSNAME,
+      PROP_STM_BUFFER_SIZE
   ));
 
   public static final String URL_PREFIX = "jdbc:csv2jdbc:";
@@ -45,19 +47,31 @@ public class Csv2JdbcDriver implements Driver {
     this.log = new PrintWriter(System.out, true);
 
     final Map<String, List<String>> params = UrlUtils.parseUrlQueryParams(url);
-    final String delegateDriverClassName = Optional.ofNullable(params.get(PROP_DELEGATE_DRIVER_CLASSNAME))
-        .orElse(Collections.emptyList())
-        .stream()
-        .findFirst()
-        .orElse("org.h2.Driver");
-
+    final String delegateDriverClassName = getOrDefault(params, PROP_DELEGATE_DRIVER_CLASSNAME, "org.h2.Driver");
     this.delegate = Reflections.createInstance(delegateDriverClassName);
-    final String delegateUrl = toDelegateUrl(url); // fixme clear this driver parameters
-    log.format(
-        "status=createdProxyDriver, delegateDriverClassName=%s, delegateUrl=%s%n",
-        delegateDriverClassName, delegateUrl
+    final String delegateUrl = toDelegateUrl(url);
+
+    final String buffSize = Objects.mapOrNull(getOrDefault(params, PROP_STM_BUFFER_SIZE), (it) -> {
+      System.setProperty("csv2jdbc.buffSize", it);
+      return it;
+    });
+
+    Log.log(
+        "status=createdProxyDriver, delegateDriverClassName=%s, buffSize=%s, delegateUrl=%s%n",
+        delegateDriverClassName, buffSize, delegateUrl
     );
     return new Csv2JdbcConnection(this.delegate.connect(delegateUrl, info));
+  }
+
+  private String getOrDefault(Map<String, List<String>> params, String k) {
+    return getOrDefault(params, k, null);
+  }
+  private String getOrDefault(Map<String, List<String>> params, String k, String def) {
+    return Optional.ofNullable(params.get(k))
+                   .orElse(Collections.emptyList())
+                   .stream()
+                   .findFirst()
+                   .orElse(def);
   }
 
   private static String toDelegateUrl(String url) {
