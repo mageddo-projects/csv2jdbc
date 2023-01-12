@@ -6,6 +6,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -16,7 +17,7 @@ import lombok.SneakyThrows;
 public class MetadataDao {
   @SneakyThrows
   public static List<Column> findColumns(Connection c, String table) {
-    final ResultSet rs = c.getMetaData().getColumns(null, null, table, null);
+    final ResultSet rs = c.getMetaData().getColumns(null, null, table.toUpperCase(Locale.ENGLISH), null);
     return toColumns(rs);
   }
 

@@ -34,7 +34,7 @@ public class CsvTableDao {
   }
 
   public static void insertData(
-      Connection connection, CopyCsvStatement csvStm, List<CSVRecord> record, List<String> cols
+      Connection connection, CopyCsvStatement csvStm, List<CSVRecord> records, List<String> cols
   ) throws SQLException {
 
     final Map<String, Column> columns = MetadataDao.findColumnsMap(connection, csvStm.getTableName());
@@ -46,10 +46,15 @@ public class CsvTableDao {
         buildBinds(cols)
     );
     try (PreparedStatement stm = connection.prepareStatement(sql)) {
-      for (CSVRecord r : record) {
+      for (CSVRecord r : records) {
         int colI = 1;
         for (String colVal : r) {
           final Column columnMetadata = columns.get(cols.get(colI - 1).toLowerCase());
+          Validator.isTrue(
+              columnMetadata != null,
+              "column metadata cant be null, colI=%d, cols=%s, recordCols=%d",
+              colI, columns, r.size()
+          );
           if (colVal == null) {
             stm.setNull(colI++, columnMetadata.getType());
           } else {
