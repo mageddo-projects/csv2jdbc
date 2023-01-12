@@ -8,7 +8,7 @@ superClass = com.mageddo.antlr.postgresql.PostgreSQLParserBase;
 
 @header
 {
-  package com.mageddo.antlr.postgresql;
+  package com.mageddo.antlr;
 }
 
 @members

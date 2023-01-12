@@ -39,7 +39,7 @@ options {
 }
 
 @header {
-  package com.mageddo.antlr.postgresql;
+  package com.mageddo.antlr;
 }
 
 @ members

@@ -56,3 +56,8 @@ shadowJar {
   relocate 'org.apache.commons.csv', 'com.mageddo.thirdparty.org.apache.commons.csv'
 }
 assemble.dependsOn shadowJar
+
+generateGrammarSource {
+  outputDirectory = file("${outputDirectory}/com/mageddo/antlr")
+//  arguments += ['-package', 'org.mellowd.compiler']
+}

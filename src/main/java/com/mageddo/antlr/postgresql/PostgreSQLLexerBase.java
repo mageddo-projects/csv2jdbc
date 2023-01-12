@@ -1,10 +1,13 @@
 package com.mageddo.antlr.postgresql;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+import com.mageddo.antlr.PostgreSQLLexer;
+
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 
 public abstract class PostgreSQLLexerBase extends Lexer {
     protected final Deque<String> tags = new ArrayDeque<>();
