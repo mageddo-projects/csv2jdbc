@@ -34,13 +34,14 @@ lexer grammar PostgreSQLLexer;
  */
 
 options {
-   superClass = PostgreSQLLexerBase;
+   superClass = com.mageddo.antlr.postgresql.PostgreSQLLexerBase;
    caseInsensitive = true;
 }
 
-@ header
-{
+@header {
+  package com.mageddo.antlr.postgresql;
 }
+
 @ members
 {
 /* This field stores the tags which are used to detect the end of a dollar-quoted string literal.

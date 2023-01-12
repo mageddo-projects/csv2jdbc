@@ -1,17 +1,20 @@
 parser grammar PostgreSQLParser;
 
-
-options { tokenVocab = PostgreSQLLexer;
-superClass = PostgreSQLParserBase;
+options {
+//tokenVocab = PostgreSQLLexer;
+superClass = com.mageddo.antlr.postgresql.PostgreSQLParserBase;
 }
 
 
 @header
 {
+  package com.mageddo.antlr.postgresql;
 }
+
 @members
 {
 }
+
 root
    : stmtblock EOF
    ;
