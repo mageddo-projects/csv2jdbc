@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Locale;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class Csv2JdbcConnection extends ProxiedConnection {
   public Csv2JdbcConnection(Connection delegate) {
     super(delegate);
