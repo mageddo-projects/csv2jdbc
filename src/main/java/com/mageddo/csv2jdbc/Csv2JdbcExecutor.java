@@ -61,7 +61,7 @@ public class Csv2JdbcExecutor {
 
       this.createTableIfNeedled(cols);
 
-      final int bufSize = 128;
+      final int bufSize = Short.MAX_VALUE;
       final List<CSVRecord> buff = new ArrayList<>(bufSize);
       int i = 0;
 
