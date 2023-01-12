@@ -125,7 +125,7 @@ public class CopyCsvStatement {
     TO
   }
 
-  public static PreparedStatement of(String sql, Connection conn) {
-    return new Csv2JdbcPreparedStatement(Csv2JdbcConverter.of(sql), conn);
+  public static PreparedStatement of(Connection conn, String sql) {
+    return new Csv2JdbcPreparedStatement(new Csv2JdbcExecutor(conn, sql));
   }
 }
