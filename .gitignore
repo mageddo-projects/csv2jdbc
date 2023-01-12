@@ -30,3 +30,5 @@ out
 
 dependency-reduced-pom.xml
 README.html
+
+src/main/gen
