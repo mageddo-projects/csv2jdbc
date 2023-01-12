@@ -30,7 +30,7 @@ public class ProxiedConnection implements Connection {
   @Override
   public Statement createStatement() throws SQLException {
     info("m=createStatement");
-    return new Csv2JdbcStatement(this.delegate.createStatement());
+    return this.delegate.createStatement();
   }
 
   @Override

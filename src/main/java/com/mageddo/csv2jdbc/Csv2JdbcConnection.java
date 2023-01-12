@@ -17,7 +17,17 @@ public class Csv2JdbcConnection extends ProxiedConnection {
 
   @Override
   public Statement createStatement() throws SQLException {
-    return super.createStatement();
+    return new Csv2JdbcStatement(this.delegate.createStatement());
+  }
+
+  @Override
+  public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
+    return new Csv2JdbcStatement(this.delegate.createStatement(resultSetType, resultSetConcurrency));
+  }
+
+  @Override
+  public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+    return new Csv2JdbcStatement(this.delegate.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability));
   }
 
   @Override
