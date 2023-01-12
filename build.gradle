@@ -5,6 +5,15 @@
  * For more details take a look at the 'Building Java & JVM projects' chapter in the Gradle
  * User Manual available at https://docs.gradle.org/7.0/userguide/building_java_projects.html
  */
+//
+//buildscript {
+//  repositories {
+//    mavenCentral()
+//  }
+//  dependencies {
+////    classpath("org.antlr:antlr4:4.11.1")
+//  }
+//}
 
 plugins {
   // Apply the java-library plugin for API and implementation separation.
@@ -21,9 +30,17 @@ repositories {
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
+//sourceSets {
+//  main {
+//    compileClasspath -= configurations.antlr
+////    runtimeClasspath -= configurations.antlr
+//  }
+//}
+
 dependencies {
 
   antlr("org.antlr:antlr4:4.11.1")
+
   api("org.antlr:antlr4-runtime:4.11.1")
 
   compileOnly 'org.projectlombok:lombok:1.18.24'
@@ -53,6 +70,20 @@ compileTestJava {
 }
 
 shadowJar {
+//  configurations = [project.configurations.compileClasspath]
+//  configurations = [project.configurations.runtimeClasspath]
+  // https://imperceptiblethoughts.com/shadow/configuration/dependencies/#filtering-dependencies
+  dependencies {
+    exclude(dependency('org.antlr:antlr4:'))
+    exclude(dependency(':antlr-runtime:'))
+    exclude(dependency(':ST4:'))
+    exclude(dependency(':org.abego.treelayout.core:'))
+    exclude(dependency(':javax.json:'))
+    exclude(dependency(':icu4j:'))
+    exclude(dependency {
+      println("=>>> ${it}")
+    })
+  }
   relocate 'org.apache.commons.csv', 'com.mageddo.thirdparty.org.apache.commons.csv'
 }
 assemble.dependsOn shadowJar
