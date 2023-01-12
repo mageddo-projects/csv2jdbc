@@ -1,9 +1,15 @@
 package com.mageddo.csv2jdbc;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.DriverManager;
 
+import org.h2.util.IOUtils;
 import org.jdbi.v3.core.Jdbi;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -41,18 +47,26 @@ class Csv2JdbcDriverTest {
   }
 
   @Test
-  void mustImportCsvToTable() {
+  void mustImportCsvToTable(@TempDir Path tempDir) throws Exception {
 
     // arrange
     final var jdbi = Jdbi.create(JDBC_URL, "SA", "");
+    final var csvFile = tempDir.resolve("csv.csv");
+    final InputStream in = getClass().getResourceAsStream("/data/csv2jdbc-driver-test/people.csv");
+    final OutputStream out = Files.newOutputStream(csvFile);
+    try (in; out) {
+      IOUtils.copy(in, out);
+    }
 
     // act
     jdbi.useHandle(h -> {
       final var r = h
-          .createUpdate("CSV2J COPY MOVS FROM '/home/typer/.mageddo/ipca/ipca-series.csv' WITH CSV HEADER " +
-              "CREATE_TABLE DELIMITER ','")
+          .createUpdate(String.format(
+              "CSV2J COPY MOVS FROM '%s' WITH CSV HEADER CREATE_TABLE DELIMITER ','",
+              csvFile
+          ))
           .execute();
-      assertEquals(109, r);
+      assertEquals(9, r);
     });
 
     // assert
