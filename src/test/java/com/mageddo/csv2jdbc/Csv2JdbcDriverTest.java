@@ -1,5 +1,6 @@
 package com.mageddo.csv2jdbc;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -8,7 +9,6 @@ import java.sql.DriverManager;
 
 import org.h2.util.IOUtils;
 import org.jdbi.v3.core.Jdbi;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -46,20 +46,20 @@ class Csv2JdbcDriverTest {
 
   }
 
-  @Disabled
   @Test
-  void mustCopyCsvToTableUsingStatement() throws Exception {
+  void mustCopyCsvToTableUsingStatement(@TempDir Path tempDir) throws Exception {
 
     // arrange
 
     // act
     final var conn = DriverManager.getConnection(JDBC_URL, "SA", "");
-    final var file = "/Users/elfreitas/Documents/csv/relatorio-contabil-usuario-2022-09.csv";
+    final var csvFile = tempDir.resolve("csv.csv");
+    copy("/data/csv2jdbc-driver-test/people.csv", csvFile);
 
     final var stm = conn.createStatement();
     final var executed = stm.execute(String.format(
-        "CSV2J COPY MOVS FROM '%s' WITH CSV HEADER CREATE_TABLE DELIMITER ';'",
-        file
+        "CSV2J COPY MOVS_TX1 FROM '%s' WITH CSV HEADER CREATE_TABLE",
+        csvFile
     ));
 
     // assert
@@ -72,11 +72,7 @@ class Csv2JdbcDriverTest {
     // arrange
     final var jdbi = Jdbi.create(JDBC_URL, "SA", "");
     final var csvFile = tempDir.resolve("csv.csv");
-    final InputStream in = getClass().getResourceAsStream("/data/csv2jdbc-driver-test/people.csv");
-    final OutputStream out = Files.newOutputStream(csvFile);
-    try (in; out) {
-      IOUtils.copy(in, out);
-    }
+    copy("/data/csv2jdbc-driver-test/people.csv", csvFile);
 
     // act
     jdbi.useHandle(h -> {
@@ -108,11 +104,7 @@ class Csv2JdbcDriverTest {
     // arrange
     final var jdbi = Jdbi.create(JDBC_URL, "SA", "");
     final var csvFile = tempDir.resolve("csv.csv");
-    final InputStream in = getClass().getResourceAsStream("/data/csv2jdbc-driver-test/people.csv");
-    final OutputStream out = Files.newOutputStream(csvFile);
-    try (in; out) {
-      IOUtils.copy(in, out);
-    }
+    copy("/data/csv2jdbc-driver-test/people.csv", csvFile);
 
     // act
     // assert
@@ -152,6 +144,15 @@ class Csv2JdbcDriverTest {
 
     // todo assert file content
 
+  }
+
+
+  private void copy(String source, Path target) throws IOException {
+    final InputStream in = getClass().getResourceAsStream(source);
+    final OutputStream out = Files.newOutputStream(target);
+    try (in; out) {
+      IOUtils.copy(in, out);
+    }
   }
 
 }
