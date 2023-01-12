@@ -1,9 +1,6 @@
-package com.mageddo.antlr.postgresql;
+package com.mageddo.antlr;
 
 import java.util.List;
-
-import com.mageddo.antlr.PostgreSQLLexer;
-import com.mageddo.antlr.PostgreSQLParser;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;

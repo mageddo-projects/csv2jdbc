@@ -2,7 +2,7 @@ parser grammar PostgreSQLParser;
 
 options {
 tokenVocab = PostgreSQLLexer;
-superClass = com.mageddo.antlr.postgresql.PostgreSQLParserBase;
+superClass = com.mageddo.antlr.PostgreSQLParserBase;
 }
 
 

@@ -1,4 +1,4 @@
-package com.mageddo.antlr.postgresql;
+package com.mageddo.antlr;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

@@ -8,10 +8,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.mageddo.antlr.PostgreSQLLexer;
+import com.mageddo.antlr.PostgreSQLParser;
 import com.mageddo.csv2jdbc.CopyCsvStatement.Command;
 import com.mageddo.csv2jdbc.CopyCsvStatement.Option;
-import com.mageddo.csv2jdc.antlr.Csv2JdbcLexer;
-import com.mageddo.csv2jdc.antlr.Csv2JdbcParser;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -19,23 +19,22 @@ import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 public class Csv2JdbcConverter {
-  private static Csv2JdbcParser parserOf(String sql) {
-    return new Csv2JdbcParser(new CommonTokenStream(new Csv2JdbcLexer(CharStreams.fromString(sql))));
+  private static PostgreSQLParser parserOf(String sql) {
+    return new PostgreSQLParser(new CommonTokenStream(new PostgreSQLLexer(CharStreams.fromString(sql))));
   }
 
   public static CopyCsvStatement of(String sql) {
 
-    final Csv2JdbcParser parser = parserOf(sql);
-
-    final Csv2JdbcParser.CopystmtContext stm = parser
-        .csv2j()
+    final PostgreSQLParser parser = parserOf(sql);
+    final PostgreSQLParser.CopycsvstmtContext stm = parser
         .stmt()
-        .copystmt();
+        .copycsvstmt()
+        ;
 
     final Map<String, Option> options = stm
-        .copy_options()
-        .copy_opt_list()
-        .copy_opt_item()
+        .copy2csv_options()
+        .copy2csv_opt_list()
+        .copy2csv_opt_item()
         .stream()
         .map(it -> {
           switch (it.getChildCount()) {
@@ -68,7 +67,7 @@ public class Csv2JdbcConverter {
 
   }
 
-  private static String parseTableName(Csv2JdbcParser.CopystmtContext stm) {
+  private static String parseTableName(PostgreSQLParser.CopycsvstmtContext stm) {
     return Optional
         .ofNullable(stm.qualified_name())
         .map(ParseTree::getText)
@@ -76,7 +75,7 @@ public class Csv2JdbcConverter {
         ;
   }
 
-  private static List<String> parseCols(Csv2JdbcParser.CopystmtContext stm) {
+  private static List<String> parseCols(PostgreSQLParser.CopycsvstmtContext stm) {
     if (stm.opt_column_list() == null) {
       return Collections.emptyList();
     }

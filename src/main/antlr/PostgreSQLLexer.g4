@@ -34,7 +34,7 @@ lexer grammar PostgreSQLLexer;
  */
 
 options {
-   superClass = com.mageddo.antlr.postgresql.PostgreSQLLexerBase;
+   superClass = com.mageddo.antlr.PostgreSQLLexerBase;
    caseInsensitive = true;
 }
 
