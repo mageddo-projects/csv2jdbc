@@ -1,6 +1,5 @@
-package com.mageddo.antlr.postgresql;
-
 import java.util.List;
+
 import org.antlr.v4.runtime.*;
 
 public abstract class PostgreSQLParserBase extends Parser {
