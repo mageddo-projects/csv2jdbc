@@ -1,17 +1,18 @@
 package com.mageddo.csv2jdbc;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Map;
+
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.ToString;
 
 /**
  * Syntax is inspired in https://www.postgresql.org/docs/current/sql-copy.html .
@@ -39,9 +40,19 @@ import java.util.Map;
 @Builder(access = AccessLevel.PROTECTED)
 public class CopyCsvStatement {
 
+  @NonNull
+  private Command command;
+
   private String tableName;
-  private Path file;
+
   private List<String> cols;
+
+  private String extractSql;
+
+  @NonNull
+  private Path file;
+
+  @NonNull
   private Map<String, Option> options;
 
   public Charset getCharset() {
@@ -57,11 +68,18 @@ public class CopyCsvStatement {
   }
 
   public boolean mustCreateTable() {
-    return  this.getOptionOrDefault(Option.CREATE_TABLE, null) != null;
+    return this.getOptionOrDefault(Option.CREATE_TABLE, null) != null;
   }
 
   Option getOptionOrDefault(String k, Option defaultV) {
     return this.options.getOrDefault(k, defaultV);
+  }
+
+  public CopyCsvStatement validateIsCsv() {
+    if (!this.options.containsKey(Option.CSV)) {
+      throw new IllegalStateException("Must inform CSV option, ex: ... WITH CSV");
+    }
+    return this;
   }
 
   @Getter
@@ -102,7 +120,12 @@ public class CopyCsvStatement {
     }
   }
 
-  public static PreparedStatement of(String sql, Connection conn) {
-    return new Csv2JdbcPreparedStatement(CopyConverter.of(sql), conn);
+  public enum Command {
+    FROM,
+    TO
+  }
+
+  public static PreparedStatement of(Connection conn, String sql) {
+    return new Csv2JdbcPreparedStatement(new Csv2JdbcExecutor(conn, sql));
   }
 }
