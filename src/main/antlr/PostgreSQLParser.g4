@@ -566,9 +566,6 @@ copystmt
 copycsvstmt
   : CSV2JCOPY qualified_name opt_column_list copy_from copy_file_name copy_delimiter opt_with copy2csv_options
   | CSV2JCOPY OPEN_PAREN preparablestmt CLOSE_PAREN TO copy_file_name opt_with copy2csv_options
-//   : CSV2JCOPY qualified_name opt_column_list copy_from copy_file_name opt_with copy_options
-//   | COPY OPEN_PAREN preparablestmt CLOSE_PAREN TO copy_file_name opt_with copy_options
-//   | COPY preparablestmt TO copy_file_name opt_with copy_options
    ;
 
 copy_from
