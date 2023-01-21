@@ -23,10 +23,24 @@ CSV2J COPY (
 
 ## Using
 
+### SQL client software application
+CSV2JDBC can be used in tools like DBeaver, SquirrelSQL, Oracle SQL Developer,
+or any other SQL client software application which supports jdbc drivers, use the information bellow to connect:
+
+* The driver: Add csv2jdbc.jar and the target database which will be used
+* The driver class: `com.mageddo.csv2jdbc.Csv2JdbcDriver`
+* Connection URL: 
+  * Template: `jdbc:csv2jdbc:${TARGET_DB_JDBC_URL}?delegateDriverClassName=${TARGET_DATABSE_DRIVER_CLASS_NAME}`
+  * H2 example: `jdbc:csv2jdbc:h2:mem:testdb?delegateDriverClassName=org.h2.Driver` 
+  * Postgres example: `jdbc:postgresql://localhost:5432/db?currentSchema=public&delegateDriverClassName=org.postgresql.Driver` 
+* Username and password: As usual
+
+### Configuring in your app 
+
 Configuring Dependency
 
 ```groovy
-implementation 'com.mageddo.csv2jdbc:csv2jdbc:0.2.0'
+implementation 'com.mageddo.csv2jdbc:csv2jdbc:0.2.1'
 implementation 'com.h2database:h2:0.2.0' // or any other database driver you want
 ```
 
