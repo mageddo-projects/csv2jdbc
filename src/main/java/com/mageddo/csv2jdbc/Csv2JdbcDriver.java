@@ -66,6 +66,7 @@ public class Csv2JdbcDriver implements Driver {
   private String getOrDefault(Map<String, List<String>> params, String k) {
     return getOrDefault(params, k, null);
   }
+
   private String getOrDefault(Map<String, List<String>> params, String k, String def) {
     return Optional.ofNullable(params.get(k))
                    .orElse(Collections.emptyList())
@@ -104,6 +105,10 @@ public class Csv2JdbcDriver implements Driver {
 
   @Override
   public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) throws SQLException {
+//    final DriverPropertyInfo[] source = this.delegate.getPropertyInfo(url, info);
+//    final DriverPropertyInfo[] props = new DriverPropertyInfo[source.length + 1];
+//    System.arraycopy(source, 0, props, 0, source.length);
+//    props[source.length] = new DriverPropertyInfo("vendor", "csv2jdbc");
     return this.delegate.getPropertyInfo(url, info);
   }
 

@@ -151,7 +151,6 @@ class Csv2JdbcDriverTest {
             """.replaceAll("\n", "\r\n"),
         Files.readString(csvFile)
     );
-
   }
 
   private void copy(String source, Path target) throws IOException {

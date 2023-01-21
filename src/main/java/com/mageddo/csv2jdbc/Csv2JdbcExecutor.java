@@ -45,7 +45,7 @@ public class Csv2JdbcExecutor {
 
   private int extractQueryToCsv() throws SQLException {
     try {
-      CsvTableDao.streamSelect(this.connection, this.csvStm.getExtractSql(), (rs) -> {
+      CsvTableDaos.streamSelect(this.connection, this.csvStm.getExtractSql(), (rs) -> {
         try (final CSVPrinter printer = this.createCsvPrinter()) {
           printer.printRecords(rs, true);
         }
@@ -59,33 +59,37 @@ public class Csv2JdbcExecutor {
   private int loadCsvIntoTable() throws SQLException {
     try (final CSVParser csvParser = createCsvParser()) {
 
-      final List<String> cols = CsvTableDao.buildColNames(
+      final List<String> cols = CsvTableDaos.buildColNames(
           this.connection, this.csvStm.getCols(), csvParser.getHeaderNames(), this.csvStm.getTableName()
       );
 
       this.createTableIfNeedled(cols);
 
+      final CsvTableDaoStrategy dao = CsvWriterFactory.create(this.connection);
+
       final int bufferSize = this.bufferSize();
-      final AtomicInteger buffRemaning = new AtomicInteger(bufferSize);
+      final AtomicInteger buffRemaining = new AtomicInteger(bufferSize);
       List<CSVRecord> buff = new ArrayList<>();
       int i = 0;
       for (final CSVRecord record : csvParser) {
 
         i++;
         final int recordSize = this.calcRecordSizeInBytes(record);
-        buffRemaning.addAndGet(-recordSize);
+        buffRemaining.addAndGet(-recordSize);
 
-        if (buffRemaning.get() <= 0) {
-          CsvTableDao.rawInsertData(this.connection, this.csvStm, buff, cols);
+        if (buffRemaining.get() <= 0) {
+          dao.insertData(this.connection, this.csvStm, buff, cols);
+//          CsvTableDaos.rawInsertData(this.connection, this.csvStm, buff, cols);
 //          CsvTableDao.insertData(this.connection, this.csvStm, buff, cols);
           buff.clear();
-          buffRemaning.set(bufferSize - recordSize);
+          buffRemaining.set(bufferSize - recordSize);
         }
         buff.add(record);
       }
 
       if (!buff.isEmpty()) {
-        CsvTableDao.rawInsertData(this.connection, this.csvStm, buff, cols);
+        dao.insertData(this.connection, this.csvStm, buff, cols);
+//        CsvTableDaos.rawInsertData(this.connection, this.csvStm, buff, cols);
 //        CsvTableDao.insertData(this.connection, this.csvStm, buff, cols);
       }
       return i;
@@ -110,7 +114,7 @@ public class Csv2JdbcExecutor {
 
   void createTableIfNeedled(List<String> cols) throws SQLException {
     if (this.csvStm.mustCreateTable()) {
-      CsvTableDao.createTable(this.connection, this.csvStm.getTableName(), cols);
+      CsvTableDaos.createTable(this.connection, this.csvStm.getTableName(), cols);
     }
   }
 

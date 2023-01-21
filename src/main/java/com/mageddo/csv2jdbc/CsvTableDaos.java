@@ -13,7 +13,7 @@ import com.mageddo.csv2jdbc.Csv2JdbcPreparedStatement.Consumer;
 
 import org.apache.commons.csv.CSVRecord;
 
-public class CsvTableDao {
+public class CsvTableDaos {
 
   public static final String PARAM_SEPARATOR = ",";
 
@@ -109,7 +109,7 @@ public class CsvTableDao {
     if (headerNames != null && !headerNames.isEmpty()) {
       return headerNames
           .stream()
-          .map(CsvTableDao::sanitize)
+          .map(CsvTableDaos::sanitize)
           .collect(Collectors.toList());
     }
     return MetadataDao.findColumnsNames(connection, table);
@@ -130,7 +130,7 @@ public class CsvTableDao {
   private static String buildColDDL(List<String> cols) {
     return cols.
         stream()
-        .map(CsvTableDao::sanitize)
+        .map(CsvTableDaos::sanitize)
         .collect(Collectors.joining(" VARCHAR(255),\n", "", " VARCHAR(255)"));
   }
 
