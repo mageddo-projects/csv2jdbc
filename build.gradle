@@ -5,6 +5,8 @@ plugins {
   id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
+apply from: "${rootDir}/nexus.gradle"
+
 repositories {
   // Use Maven Central for resolving dependencies.
   mavenCentral()
@@ -50,6 +52,7 @@ compileTestJava {
 }
 
 shadowJar {
+  archiveFileName = "${project.name}-${project.version}.jar"
   dependencies {
     exclude(dependency('org.antlr:antlr4:'))
     exclude(dependency(':antlr-runtime:'))
