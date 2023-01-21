@@ -41,7 +41,7 @@ Configuring Dependency
 
 ```groovy
 implementation 'com.mageddo.csv2jdbc:csv2jdbc:0.2.0'
-implementation 'com.h2database:h2:0.2.0' // or any other database driver you want
+implementation 'com.h2database:h2:2.1.214' // or any other database driver you want
 ```
 
 Setup the Driver and loading a csv to TEMP_TABLE, H2 Database example:
