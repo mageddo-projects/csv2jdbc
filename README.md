@@ -27,7 +27,7 @@ CSV2J COPY (
 CSV2JDBC can be used in tools like DBeaver, SquirrelSQL, Oracle SQL Developer,
 or any other SQL client software application which supports jdbc drivers, use the information bellow to connect:
 
-* The driver: Add csv2jdbc.jar and the target database which will be used
+* The driver: Add [csv2jdbc.jar][1] and the target database which will be used
 * The driver class: `com.mageddo.csv2jdbc.Csv2JdbcDriver`
 * Connection URL: 
   * Template: `jdbc:csv2jdbc:${TARGET_DB_JDBC_URL}?delegateDriverClassName=${TARGET_DATABSE_DRIVER_CLASS_NAME}`
@@ -40,7 +40,7 @@ or any other SQL client software application which supports jdbc drivers, use th
 Configuring Dependency
 
 ```groovy
-implementation 'com.mageddo.csv2jdbc:csv2jdbc:0.2.1'
+implementation 'com.mageddo.csv2jdbc:csv2jdbc:0.2.0'
 implementation 'com.h2database:h2:0.2.0' // or any other database driver you want
 ```
 
@@ -101,3 +101,5 @@ id=2, name=Mario
 ```bash
 ./gradlew clean release build publishToMavenCentral closeAndReleaseMavenCentralStagingRepository
 ```
+
+[1]: https://oss.sonatype.org/service/local/repositories/releases/content/com/mageddo/csv2jdbc/csv2jdbc/0.2.0/csv2jdbc-0.2.0-all.jar
