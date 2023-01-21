@@ -354,6 +354,6 @@ public class ProxiedConnection implements Connection {
   }
 
   public void info(String s) {
-    System.out.println(s);
+    Log.log(s);
   }
 }

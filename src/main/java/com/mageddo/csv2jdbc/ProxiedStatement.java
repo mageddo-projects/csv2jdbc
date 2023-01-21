@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
-public class ProxiedStatement implements Statement  {
+public class ProxiedStatement implements Statement {
 
   private final Statement delegate;
 
@@ -279,7 +279,7 @@ public class ProxiedStatement implements Statement  {
     return this.delegate.isWrapperFor(iface);
   }
 
-  public static void log(String s){
-    System.out.println(ProxiedStatement.class.getSimpleName() + ": " + s);
+  public static void log(String s) {
+    Log.log("%s: %s", ProxiedStatement.class.getSimpleName(), s);
   }
 }
