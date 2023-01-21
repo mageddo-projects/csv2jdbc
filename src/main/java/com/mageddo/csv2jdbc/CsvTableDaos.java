@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -80,10 +79,6 @@ public class CsvTableDaos {
   ) {
 
     final long start = System.currentTimeMillis();
-    final Map<String, Column> columns = MetadataDao.findColumnsMap(connection,
-        csvStm.getTableName()
-    );
-
     final String sql = String.format(
         "INSERT INTO %s (%s) VALUES (%s)",
         csvStm.getTableName(),
@@ -92,9 +87,10 @@ public class CsvTableDaos {
     );
     try (PreparedStatement stm = connection.prepareStatement(sql)) {
 
-      for (int i = 0; i < records.size(); i++) {
-        for (String colVal : records.get(i)) {
-          stm.setString(i++ + 1, colVal);
+      for (CSVRecord r : records) {
+        int i = 1;
+        for (String colVal : r) {
+          stm.setString(i++, colVal);
         }
         stm.addBatch();
       }

@@ -20,7 +20,7 @@ public class CsvTableDaoStrategyBatch implements CsvTableDaoStrategy {
       Connection connection, CSVParser csvParser, CopyCsvStatement csvStm, List<String> cols
   ) {
     int i = 0;
-    final int bufSize = 100;
+    final int bufSize = 512;
     final List<CSVRecord> buff = new ArrayList<>(bufSize);
     for (CSVRecord record : csvParser) {
       i++;
