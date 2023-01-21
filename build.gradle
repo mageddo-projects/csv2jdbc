@@ -69,7 +69,7 @@ generateGrammarSource {
 
 processResources {
   outputs.upToDateWhen { false }
-  filesMatching('info.properties') {
+  filesMatching('**/info.properties') {
     expand(project.properties)
   }
 }
