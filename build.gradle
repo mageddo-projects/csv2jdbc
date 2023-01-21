@@ -66,3 +66,10 @@ generateGrammarSource {
   outputDirectory = file("${outputDirectory}/com/mageddo/antlr")
 //  arguments += ['-package', 'org.mellowd.compiler']
 }
+
+processResources {
+  outputs.upToDateWhen { false }
+  filesMatching('info.properties') {
+    expand(project.properties)
+  }
+}

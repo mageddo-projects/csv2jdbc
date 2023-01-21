@@ -1,6 +1,5 @@
 package com.mageddo.csv2jdbc;
 
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -29,7 +28,6 @@ public class Csv2JdbcDriver implements Driver {
 
   public static final String URL_PREFIX = "jdbc:csv2jdbc:";
 
-
   static {
     try {
       DriverManager.registerDriver(new Csv2JdbcDriver());
@@ -38,16 +36,17 @@ public class Csv2JdbcDriver implements Driver {
     }
   }
 
-  private PrintWriter log;
   private Driver delegate;
 
   @Override
   public Connection connect(String url, Properties info) throws SQLException {
 
-    this.log = new PrintWriter(System.out, true);
-
     final Map<String, List<String>> params = UrlUtils.parseUrlQueryParams(url);
-    final String delegateDriverClassName = getOrDefault(params, PROP_DELEGATE_DRIVER_CLASSNAME, "org.h2.Driver");
+    final String delegateDriverClassName = getOrDefault(
+        params,
+        PROP_DELEGATE_DRIVER_CLASSNAME,
+        "org.h2.Driver"
+    );
     this.delegate = Reflections.createInstance(delegateDriverClassName);
     final String delegateUrl = toDelegateUrl(url);
 
@@ -57,8 +56,9 @@ public class Csv2JdbcDriver implements Driver {
     });
 
     Log.log(
-        "status=createdProxyDriver, delegateDriverClassName=%s, buffSize=%s, delegateUrl=%s%n",
-        delegateDriverClassName, buffSize, delegateUrl
+        "status=createdProxyDriver, delegateDriverClassName=%s, buffSize=%s, delegateUrl=%s, "
+            + "version=%s%n",
+        delegateDriverClassName, buffSize, delegateUrl, Version.getVersion()
     );
     return new Csv2JdbcConnection(this.delegate.connect(delegateUrl, info));
   }
@@ -69,14 +69,15 @@ public class Csv2JdbcDriver implements Driver {
 
   private String getOrDefault(Map<String, List<String>> params, String k, String def) {
     return Optional.ofNullable(params.get(k))
-                   .orElse(Collections.emptyList())
-                   .stream()
-                   .findFirst()
-                   .orElse(def);
+        .orElse(Collections.emptyList())
+        .stream()
+        .findFirst()
+        .orElse(def);
   }
 
   private static String toDelegateUrl(String url) {
-    final StringBuilder newUrl = new StringBuilder(UrlUtils.findBody(url.replace(URL_PREFIX, "jdbc:")));
+    final StringBuilder newUrl = new StringBuilder(
+        UrlUtils.findBody(url.replace(URL_PREFIX, "jdbc:")));
     final Map<String, List<String>> params = UrlUtils.parseUrlQueryParams(url);
     PROPS.forEach(params::remove);
 
