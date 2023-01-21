@@ -24,7 +24,7 @@ CSV2J COPY (
 ## Using
 
 ### SQL client software application
-CSV2JDBC can be used in tools like DBeaver, SquirrelSQL, Oracle SQL Developer,
+CSV2JDBC can be used with tools like **DBeaver**, **SquirrelSQL**, **Oracle SQL Developer**,
 or any other SQL client software application which supports jdbc drivers, use the information bellow to connect:
 
 * The driver: Add [csv2jdbc.jar][1] and the target database which will be used
