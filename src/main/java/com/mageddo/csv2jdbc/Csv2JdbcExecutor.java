@@ -3,21 +3,15 @@ package com.mageddo.csv2jdbc;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVRecord;
 
 public class Csv2JdbcExecutor {
 
   public static final int HEADER_COUNT = 1;
-  public static final int _16MB_IN_BYTES = 16 * 1024 * 1024;
-  public static final int COL_METADATA_SIZE = 3; // duas aspas simples e uma virgula
-  public static final int ROW_METADATA_SIZE = 3; // dois parenteses
 
   private final Connection connection;
   private final CopyCsvStatement csvStm;
@@ -66,52 +60,12 @@ public class Csv2JdbcExecutor {
       this.createTableIfNeedled(cols);
 
       final CsvTableDaoStrategy dao = CsvWriterFactory.create(this.connection);
+      return dao.insertData(this.connection, csvParser, this.csvStm, cols);
 
-      final int bufferSize = this.bufferSize();
-      final AtomicInteger buffRemaining = new AtomicInteger(bufferSize);
-      List<CSVRecord> buff = new ArrayList<>();
-      int i = 0;
-      for (final CSVRecord record : csvParser) {
-
-        i++;
-        final int recordSize = this.calcRecordSizeInBytes(record);
-        buffRemaining.addAndGet(-recordSize);
-
-        if (buffRemaining.get() <= 0) {
-          dao.insertData(this.connection, this.csvStm, buff, cols);
-//          CsvTableDaos.rawInsertData(this.connection, this.csvStm, buff, cols);
-//          CsvTableDao.insertData(this.connection, this.csvStm, buff, cols);
-          buff.clear();
-          buffRemaining.set(bufferSize - recordSize);
-        }
-        buff.add(record);
-      }
-
-      if (!buff.isEmpty()) {
-        dao.insertData(this.connection, this.csvStm, buff, cols);
-//        CsvTableDaos.rawInsertData(this.connection, this.csvStm, buff, cols);
-//        CsvTableDao.insertData(this.connection, this.csvStm, buff, cols);
-      }
-      return i;
     } catch (IOException e) {
       throw new SQLException(e);
     }
   }
-
-  private int bufferSize() {
-    return Integer.parseInt(
-        System.getProperty("csv2jdbc.buffSize", String.valueOf(_16MB_IN_BYTES))
-    );
-  }
-
-  private int calcRecordSizeInBytes(CSVRecord record) {
-    return record
-        .toList()
-        .stream()
-        .mapToInt(it -> it.length() + COL_METADATA_SIZE)
-        .sum() + ROW_METADATA_SIZE;
-  }
-
   void createTableIfNeedled(List<String> cols) throws SQLException {
     if (this.csvStm.mustCreateTable()) {
       CsvTableDaos.createTable(this.connection, this.csvStm.getTableName(), cols);
