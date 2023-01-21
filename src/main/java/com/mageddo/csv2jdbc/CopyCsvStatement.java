@@ -22,8 +22,8 @@ import lombok.ToString;
  * </ol>
  * <p>
  * Examples:
- *
- * <code><pre>
+ * <code>
+ * <pre>
  *   -- loads a csv which has a header to the table filling table columns in the same order as the csv ; is the delimiter
  *   CSV2J COPY :tableName FROM :csvPath WITH HEADER DELIMITER ';' CSV
  *
@@ -32,7 +32,8 @@ import lombok.ToString;
  *
  *   -- loads a csv creating the dest table
  *   CSV2J COPY :tableName FROM :csvPath WITH DELIMITER ';' CSV CREATE_TABLE
- * </pre></code>
+ * </pre>
+ * </code>
  */
 
 @ToString
