@@ -134,18 +134,22 @@ public class CsvTableDaos {
         .collect(Collectors.joining(PARAM_SEPARATOR));
   }
 
-
   private static String buildColDDL(List<String> cols) {
     return cols.
         stream()
-        .map(CsvTableDaos::sanitize)
-        .collect(Collectors.joining(" VARCHAR(255),\n", "", " VARCHAR(255)"));
+        .map(col -> String.format("%s VARCHAR(%d)", col, 1000))
+        .collect(Collectors.joining(
+            ",\n",
+            "",
+            ""
+        ));
   }
 
   private static String sanitize(String s) {
     return s
-        .replaceAll("(^[^a-zA-Z])+", "c$1")
-        .replaceAll("([^a-zA-Z]+$)", "c$1");
+        .replaceAll("^\\W+", "c_")
+        .replaceAll("\\W+", "_")
+        ;
   }
 
 }
