@@ -1,7 +1,14 @@
 package com.mageddo.csv2jdbc;
 
 public class Log {
-  public static void log(String s, Object ... args){
-    System.out.printf(s + "%n", args);
+
+  private static boolean ACTIVE = Version
+      .getVersion()
+      .contains("-snapshot");
+
+  public static void log(String s, Object... args) {
+    if (ACTIVE) {
+      System.out.printf(s + "%n", args);
+    }
   }
 }
