@@ -1,5 +1,6 @@
 package com.mageddo.csv2jdbc;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -29,7 +30,8 @@ public class Csv2JdbcExecutor {
         case TO:
           return this.extractQueryToCsv();
         default:
-          throw new UnsupportedOperationException(String.format("invalid option: %s", this.csvStm.getCommand()));
+          throw new UnsupportedOperationException(
+              String.format("invalid option: %s", this.csvStm.getCommand()));
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -41,11 +43,47 @@ public class Csv2JdbcExecutor {
     try {
       CsvTableDaos.streamSelect(this.connection, this.csvStm.getExtractSql(), (rs) -> {
         try (final CSVPrinter printer = this.createCsvPrinter()) {
+          Log.log("status=printingRecords");
           printer.printRecords(rs, true);
         }
       });
-      return Files.countLines(this.csvStm.getFile()) - HEADER_COUNT;
     } catch (Exception e) {
+      throw new SQLException(e);
+    }
+    Log.log("status=csvWritten");
+    try {
+      final int lines = Files.countLines(this.csvStm.getFile()) - HEADER_COUNT;
+      Log.log("status=linesCount, lines={}", lines);
+      return lines;
+    } catch (IOException e) {
+      throw new SQLException(e);
+    }
+  }
+
+  private int extractQueryToCsv0() throws SQLException {
+    try {
+      final BufferedWriter out = java.nio.file.Files.newBufferedWriter(this.csvStm.getFile());
+      CsvTableDaos.streamSelect(this.connection, this.csvStm.getExtractSql(), (rs) -> {
+//        try (final CSVPrinter printer = this.createCsvPrinter()) {
+        final int columns = rs
+            .getMetaData()
+            .getColumnCount();
+        while (rs.next()){
+          for (int i = 1; i <= columns; i++) {
+            out.write(rs.getString(i));
+            out.write(", ");
+          }
+          out.write('\n');
+        }
+//          printer.printRecords(rs, true);
+//        }
+      });
+    } catch (Exception e) {
+      throw new SQLException(e);
+    }
+    try {
+      return Files.countLines(this.csvStm.getFile()) - HEADER_COUNT;
+    } catch (IOException e) {
       throw new SQLException(e);
     }
   }
@@ -54,7 +92,8 @@ public class Csv2JdbcExecutor {
     try (final CSVParser csvParser = createCsvParser()) {
 
       final List<String> cols = CsvTableDaos.buildColNames(
-          this.connection, this.csvStm.getCols(), csvParser.getHeaderNames(), this.csvStm.getTableName()
+          this.connection, this.csvStm.getCols(), csvParser.getHeaderNames(),
+          this.csvStm.getTableName()
       );
 
       this.createTableIfNeedled(cols);
@@ -66,6 +105,7 @@ public class Csv2JdbcExecutor {
       throw new SQLException(e);
     }
   }
+
   void createTableIfNeedled(List<String> cols) throws SQLException {
     if (this.csvStm.mustCreateTable()) {
       CsvTableDaos.createTable(this.connection, this.csvStm.getTableName(), cols);
@@ -79,9 +119,9 @@ public class Csv2JdbcExecutor {
 
   private CSVPrinter createCsvPrinter() throws IOException {
     return this.getCsvFormat()
-               .builder()
-               .build()
-               .print(this.csvStm.getFile(), this.csvStm.getCharset())
+        .builder()
+        .build()
+        .print(this.csvStm.getFile(), this.csvStm.getCharset())
         ;
   }
 

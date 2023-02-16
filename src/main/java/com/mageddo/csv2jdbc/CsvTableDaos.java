@@ -28,13 +28,23 @@ public class CsvTableDaos {
 
   public static int streamSelect(Connection conn, String sql, Consumer<ResultSet> c)
       throws Exception {
-    try (PreparedStatement stm = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY,
-        ResultSet.CONCUR_READ_ONLY
+    final boolean autoCommit = conn.getAutoCommit();
+    if (autoCommit) {
+      conn.setAutoCommit(false);
+    }
+    Log.log("m=streamSelect, sql={}, autoCommit={}", sql, autoCommit);
+    try (PreparedStatement stm = conn.prepareStatement(
+        sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY
     )) {
       stm.setFetchSize(1024);
       try (final ResultSet rs = stm.executeQuery()) {
+        Log.log("m=streamSelect, status=executed, sql={}", sql);
         c.accept(rs);
         return rs.getRow();
+      }
+    } finally {
+      if (autoCommit) {
+        conn.setAutoCommit(true);
       }
     }
   }
