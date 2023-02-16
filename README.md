@@ -40,8 +40,8 @@ or any other SQL client software application which supports jdbc drivers, use th
 Configuring Dependency
 
 ```groovy
-implementation 'com.mageddo.csv2jdbc:csv2jdbc:0.2.0'
-implementation 'com.h2database:h2:2.1.214' // or any other database driver you want
+implementation 'com.mageddo.csv2jdbc:csv2jdbc:0.2.1'
+implementation 'com.h2database:h2:0.2.1' // or any other database driver you want
 ```
 
 Setup the Driver and loading a csv to TEMP_TABLE, H2 Database example:
@@ -102,4 +102,4 @@ id=2, name=Mario
 ./gradlew clean release build publishToMavenCentral closeAndReleaseMavenCentralStagingRepository
 ```
 
-[1]: https://oss.sonatype.org/service/local/repositories/releases/content/com/mageddo/csv2jdbc/csv2jdbc/0.2.0/csv2jdbc-0.2.0-all.jar
+[1]: https://oss.sonatype.org/service/local/repositories/releases/content/com/mageddo/csv2jdbc/csv2jdbc/0.2.1/csv2jdbc-0.2.1-all.jar
