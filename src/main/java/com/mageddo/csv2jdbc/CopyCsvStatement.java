@@ -83,6 +83,18 @@ public class CopyCsvStatement {
     return this;
   }
 
+  public boolean isZIP() {
+    return this.options.containsKey(Option.ZIP);
+  }
+
+  public boolean isGZIP() {
+    return this.options.containsKey(Option.GZIP);
+  }
+
+  protected void setFile(Path file) {
+    this.file = file;
+  }
+
   @Getter
   @ToString
   @EqualsAndHashCode(of = "name")
@@ -98,6 +110,11 @@ public class CopyCsvStatement {
 
     public static final String ENCODING = "ENCODING";
 
+    public static final String ZIP = "ZIP";
+
+    public static final String GZIP = "GZIP";
+
+
     public static final Option DEFAULT_CSV = new Option(CSV);
     public static final Option DEFAULT_HEADER = new Option(HEADER);
 
@@ -106,6 +123,10 @@ public class CopyCsvStatement {
     public static final Option DEFAULT_CREATE_TABLE = new Option(CREATE_TABLE);
 
     public static final Option DEFAULT_ENCODING = new Option(ENCODING, "utf-8");
+
+    public static final Option DEFAULT_ZIP = new Option(ZIP);
+
+    public static final Option DEFAULT_GZIP = new Option(GZIP);
 
     private final String name;
     private final String value;

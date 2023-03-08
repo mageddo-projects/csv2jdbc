@@ -660,6 +660,8 @@ copy2csv_opt_list
 copy2csv_opt_item
    : DELIMITER sconst
    | CSV
+   | GZIP
+   | ZIP
    | HEADER_P
    | CREATE_TABLE_P
    | ENCODING sconst

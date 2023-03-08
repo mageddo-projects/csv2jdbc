@@ -2192,6 +2192,15 @@ LOOP
 OPEN
    : 'OPEN'
    ;
+
+ZIP
+   : 'ZIP'
+   ;
+
+GZIP
+   : 'GZIP'
+   ;
+
    //
 
    // IDENTIFIERS (4.1.1)

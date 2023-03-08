@@ -45,7 +45,7 @@ public class Csv2JdbcDriver implements Driver {
     final String delegateDriverClassName = getOrDefault(
         params,
         PROP_DELEGATE_DRIVER_CLASSNAME,
-        "org.h2.Driver"
+        info.getProperty(PROP_DELEGATE_DRIVER_CLASSNAME,"org.h2.Driver")
     );
     this.delegate = Reflections.createInstance(delegateDriverClassName);
     final String delegateUrl = toDelegateUrl(url);
