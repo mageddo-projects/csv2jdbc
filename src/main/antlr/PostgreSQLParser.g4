@@ -665,6 +665,12 @@ copy2csv_opt_item
    | HEADER_P
    | CREATE_TABLE_P
    | ENCODING sconst
+   | LANGUAGE sconst
+   | DATEFORMAT sconst
+   | TIMEFORMAT sconst
+   | DATETIMEFORMAT sconst
+   | NUMBERFORMAT sconst
+   | DECIMALFORMAT sconst
    ;
 
 createstmt

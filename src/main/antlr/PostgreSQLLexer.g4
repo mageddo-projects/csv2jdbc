@@ -2201,6 +2201,28 @@ GZIP
    : 'GZIP'
    ;
 
+DATEFORMAT
+   : 'DATEFORMAT'
+   ;
+
+TIMEFORMAT
+   : 'TIMEFORMAT'
+   ;
+
+DATETIMEFORMAT
+   : 'DATETIMEFORMAT'
+   ;
+
+NUMBERFORMAT
+   : 'NUMBERFORMAT'
+   ;
+
+DECIMALFORMAT
+   : 'DECIMALFORMAT'
+   ;
+
+
+
    //
 
    // IDENTIFIERS (4.1.1)

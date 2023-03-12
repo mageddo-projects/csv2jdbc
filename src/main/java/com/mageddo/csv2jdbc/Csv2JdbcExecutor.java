@@ -52,7 +52,7 @@ public class Csv2JdbcExecutor {
       CsvTableDaos.streamSelect(this.connection, this.csvStm.getExtractSql(), (rs) -> {
         try (final CSVPrinter printer = this.createCsvPrinter()) {
           Log.log("status=printingRecords");
-          final ProxiedResultSet prs = new ProxiedResultSet(rs);
+          final FormatterAndCounterResultSet prs = new FormatterAndCounterResultSet(rs, this.csvStm);
           printer.printRecords(prs, this.csvStm.hasHeader());
           rowCount.set( prs.getRow() - 1 );
         }
@@ -78,12 +78,13 @@ public class Csv2JdbcExecutor {
       final BufferedWriter out = java.nio.file.Files.newBufferedWriter(this.csvStm.getFile());
       CsvTableDaos.streamSelect(this.connection, this.csvStm.getExtractSql(), (rs) -> {
 //        try (final CSVPrinter printer = this.createCsvPrinter()) {
-        final int columns = rs
+        final FormatterAndCounterResultSet prs = new FormatterAndCounterResultSet(rs, this.csvStm);
+        final int columns = prs
             .getMetaData()
             .getColumnCount();
-        while (rs.next()){
+        while (prs.next()){
           for (int i = 1; i <= columns; i++) {
-            out.write(rs.getString(i));
+            out.write( prs.getObject(i).toString() );
             out.write(", ");
           }
           out.write('\n');

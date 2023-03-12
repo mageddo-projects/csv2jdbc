@@ -178,6 +178,7 @@ class Csv2JdbcDriverTest {
         2,7.50,2023-01-31 21:59:58.987
         """.replaceAll("\n", "\r\n"), Files.readString(csvFile));
   }
+
   @Test
   void mustExtractQueryToCsvZIP(@TempDir Path tempDir) throws Exception {
 
@@ -242,6 +243,96 @@ class Csv2JdbcDriverTest {
         1,10.99,2022-01-31 23:59:58.987
         2,7.50,2023-01-31 21:59:58.987
         """.replaceAll("\n", "\r\n"), readFromGZip );
+  }
+
+  @Test
+  void mustExtractQueryToCsvUsingPT_BR(@TempDir Path tempDir) throws Exception {
+
+    // arrange
+    final var jdbi = Jdbi.create(JDBC_URL, "SA", "");
+    final var csvFile = tempDir.resolve("csv.csv");
+
+    // act
+    // assert
+    jdbi.useHandle(h -> {
+      final var updated = h.createUpdate(String.format("""
+              CSV2J COPY (
+                SELECT 1234567890 AS ID, 1234567890.99 AS AMOUNT, TIMESTAMP '2022-01-31 23:59:58.987' AS DAT_CREATION, DATE '2023-03-11' as DAT_BORN, TIME '21:47:01' as TIME_BORN
+                UNION ALL
+                SELECT 1000000 AS ID, 1000.99 AS AMOUNT, TIMESTAMP '2022-01-31 23:59:58.987' AS DAT_CREATION, DATE '1978-04-16' as DAT_BORN, TIME '23:35:00' as TIME_BORN
+              ) TO '%s' WITH CSV HEADER LANGUAGE 'pt-BR'
+              """, csvFile))
+          .execute();
+      assertEquals(2, updated);
+    });
+
+    assertEquals("""
+       ID,AMOUNT,DAT_CREATION,DAT_BORN,TIME_BORN
+       1.234.567.890,"1.234.567.890,99",31/01/2022 23:59:58,11/03/2023,21:47:01
+       1.000.000,"1.000,99",31/01/2022 23:59:58,16/04/1978,23:35:00
+        """.replaceAll("\n", "\r\n"), Files.readString(csvFile));
+  }
+
+  @Test
+  void mustExtractQueryToCsvUsingEN_US(@TempDir Path tempDir) throws Exception {
+
+    // arrange
+    final var jdbi = Jdbi.create(JDBC_URL, "SA", "");
+    final var csvFile = tempDir.resolve("csv.csv");
+
+    // act
+    // assert
+    jdbi.useHandle(h -> {
+      final var updated = h.createUpdate(String.format("""
+              CSV2J COPY (
+                SELECT 1234567890 AS ID, 1234567890.99 AS AMOUNT, TIMESTAMP '2022-01-31 23:59:58.987' AS DAT_CREATION, DATE '2023-03-11' as DAT_BORN, TIME '21:47:01' as TIME_BORN
+                UNION ALL
+                SELECT 1000000 AS ID, 1000.99 AS AMOUNT, TIMESTAMP '2022-01-31 23:59:58.987' AS DAT_CREATION, DATE '1978-04-16' as DAT_BORN, TIME '23:35:00' as TIME_BORN
+              ) TO '%s' WITH CSV HEADER LANGUAGE 'en-US'
+              """, csvFile))
+          .execute();
+      assertEquals(2, updated);
+    });
+
+    assertEquals("""
+        ID,AMOUNT,DAT_CREATION,DAT_BORN,TIME_BORN
+        "1,234,567,890","1,234,567,890.99","1/31/22, 11:59:58 PM",3/11/23,9:47:01 PM
+        "1,000,000","1,000.99","1/31/22, 11:59:58 PM",4/16/78,11:35:00 PM
+        """.replaceAll("\n", "\r\n"), Files.readString(csvFile));
+  }
+
+
+  @Test
+  void mustExtractQueryToCsvUsingPT_BR_with_CustomFormat(@TempDir Path tempDir) throws Exception {
+
+    // arrange
+    final var jdbi = Jdbi.create(JDBC_URL, "SA", "");
+    final var csvFile = tempDir.resolve("csv.csv");
+
+    // act
+    // assert
+    jdbi.useHandle(h -> {
+      final var updated = h.createUpdate(String.format("""
+              CSV2J COPY (
+                SELECT 1234567890 AS ID, 1234567890.995 AS AMOUNT, TIMESTAMP '2022-01-31 23:59:58.987' AS DAT_CREATION, DATE '2023-03-11' as DAT_BORN, TIME '21:47:01.001' as TIME_BORN
+                UNION ALL
+                SELECT 1 AS ID, 1.12345 AS AMOUNT, TIMESTAMP '2022-01-31 23:59:58' AS DAT_CREATION, DATE '1978-04-16' as DAT_BORN, TIME '23:35:00' as TIME_BORN
+              ) TO '%s' WITH CSV HEADER LANGUAGE 'pt-BR'
+               DATETIMEFORMAT 'yyyy-MM-dd HH:mm:ss.SSSXXX'
+               DATEFORMAT 'yyyy-MM-dd'
+               TIMEFORMAT 'HH:mm:ss.SSSXXX'
+               NUMBERFORMAT '#00'
+               DECIMALFORMAT '#00.00'
+              """, csvFile))
+          .execute();
+      assertEquals(2, updated);
+    });
+
+    assertEquals("""
+        ID,AMOUNT,DAT_CREATION,DAT_BORN,TIME_BORN
+        1234567890,"1234567891,00",2022-01-31 23:59:58.987-03:00,2023-03-11,21:47:01.001-03:00
+        01,"01,12",2022-01-31 23:59:58.000-03:00,1978-04-16,23:35:00.000-03:00
+        """.replaceAll("\n", "\r\n"), Files.readString(csvFile));
   }
 
 
