@@ -61,8 +61,11 @@ public class FormatterAndCounterResultSet extends DelegateResultSet {
 
   @Override
   public boolean next() throws SQLException {
-    count++;
-    return super.next();
+    if( super.next() ) {
+      count++;
+      return true;
+    }
+    return false;
   }
 
   @Override

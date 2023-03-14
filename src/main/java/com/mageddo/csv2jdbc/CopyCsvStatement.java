@@ -91,6 +91,12 @@ public class CopyCsvStatement {
     return this.options.containsKey(Option.GZIP);
   }
 
+  public String getCompression() {
+    if( isGZIP() ) return Option.GZIP;
+    if( isZIP() ) return Option.ZIP;
+    return "";
+  }
+
   protected void setFile(Path file) {
     this.file = file;
   }

@@ -4,7 +4,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -47,6 +49,24 @@ public class Csv2JdbcExecutor {
   }
 
   private int extractQueryToCsv() throws SQLException {
+    CsvExtractor extractor = new CsvExtractor( this.csvStm.getFile().toString(),
+        this.csvStm.hasHeader(), this.csvStm.getDelimiter(), this.csvStm.getCharset(),
+        this.csvStm.getCompression() );
+    try {
+      CsvTableDaos.streamSelect(this.connection, this.csvStm.getExtractSql(),
+          o -> extractor.accept( new FormatterAndCounterResultSet(o, this.csvStm) ) );
+    } catch (Exception e) {
+      throw new SQLException(e);
+    }
+    if( extractor.getFiles().size() == 1 ) {
+      this.csvStm.setFile( Paths.get( extractor.getFiles().iterator().next() ) );
+    }
+    Log.log("status=csvWritten");
+    Log.log("status=linesCount, lines={}", extractor.getRowCount());
+    return extractor.getRowCount();
+  }
+
+  private int extractQueryToCsv1() throws SQLException {
     final AtomicInteger rowCount = new AtomicInteger();
     try {
       CsvTableDaos.streamSelect(this.connection, this.csvStm.getExtractSql(), (rs) -> {
