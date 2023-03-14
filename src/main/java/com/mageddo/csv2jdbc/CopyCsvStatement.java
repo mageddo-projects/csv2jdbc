@@ -83,6 +83,49 @@ public class CopyCsvStatement {
     return this;
   }
 
+  public boolean isZIP() {
+    return this.options.containsKey(Option.ZIP);
+  }
+
+  public boolean isGZIP() {
+    return this.options.containsKey(Option.GZIP);
+  }
+
+  public boolean isBZIP2() {
+    return this.options.containsKey(Option.BZIP2);
+  }
+
+  public String getCompression() {
+    if( isGZIP() ) return Option.GZIP;
+    if( isZIP() ) return Option.ZIP;
+    if( isBZIP2() ) return Option.BZIP2;
+    return "";
+  }
+
+  protected void setFile(Path file) {
+    this.file = file;
+  }
+
+  public String getLanguage() {
+    return this.options.getOrDefault(Option.LANGUAGE,Option.DEFAULT_LANGUAGE).getValue();
+  }
+
+  public String getDateFormat() {
+    return this.options.getOrDefault("DATEFORMAT",Option.DEFAULT_NULL).getValue();
+  }
+  public String getTimeFormat() {
+    return this.options.getOrDefault("TIMEFORMAT",Option.DEFAULT_NULL).getValue();
+  }
+  public String getDateTimeFormat() {
+    return this.options.getOrDefault("DATETIMEFORMAT",Option.DEFAULT_NULL).getValue();
+  }
+  public String getNumberFormat() {
+    return this.options.getOrDefault("NUMBERFORMAT",Option.DEFAULT_NULL).getValue();
+  }
+  public String getDecimalFormat() {
+    return this.options.getOrDefault("DECIMALFORMAT",Option.DEFAULT_NULL).getValue();
+  }
+
   @Getter
   @ToString
   @EqualsAndHashCode(of = "name")
@@ -98,6 +141,17 @@ public class CopyCsvStatement {
 
     public static final String ENCODING = "ENCODING";
 
+    public static final String ZIP = "ZIP";
+
+    public static final String GZIP = "GZIP";
+
+    public static final String BZIP2 = "BZIP2";
+
+    public static final String LANGUAGE = "LANGUAGE";
+
+
+    public static final Option DEFAULT_NULL = new Option(null);
+
     public static final Option DEFAULT_CSV = new Option(CSV);
     public static final Option DEFAULT_HEADER = new Option(HEADER);
 
@@ -106,6 +160,12 @@ public class CopyCsvStatement {
     public static final Option DEFAULT_CREATE_TABLE = new Option(CREATE_TABLE);
 
     public static final Option DEFAULT_ENCODING = new Option(ENCODING, "utf-8");
+
+    public static final Option DEFAULT_ZIP = new Option(ZIP);
+
+    public static final Option DEFAULT_GZIP = new Option(GZIP);
+
+    public static final Option DEFAULT_LANGUAGE = new Option(LANGUAGE);
 
     private final String name;
     private final String value;

@@ -18,8 +18,44 @@ CSV2J COPY (
   SELECT 1 AS ID, 10.99 AS AMOUNT, TIMESTAMP '2022-01-31 23:59:58.987' AS DAT_CREATION
   UNION ALL
   SELECT 2 AS ID, 7.50 AS AMOUNT, TIMESTAMP '2023-01-31 21:59:58.987' AS DAT_CREATION
-) TO '/tmp/file.csv' WITH CSV HEADER
+) TO '/tmp/file.csv' WITH CSV [ZIP|GZIP] HEADER
 ```
+
+### Formatting Date,Time,Datetime and Numbers
+#### Selecting language 
+```
+LANGUAGE '<Language Tag>' -- en-US pt-BR fr-FR
+```
+Default is System Language<br>
+More language tag see [Supported Locales]("https://www.oracle.com/java/technologies/javase/jdk8-jre8-suported-locales.html#util-text")
+
+#### Using custom templates
+```
+DATETIMEFORMAT 'yyyy-MM-dd HH:mm:ss.SSS'
+DATEFORMAT 'yyyy-MM-dd'
+TIMEFORMAT 'HH:mm:ss.SSS'
+NUMBERFORMAT '#00'
+DECIMALFORMAT '#00.00'
+```
+More patterns details see 
+[SimpleDateFormat](https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html) 
+and [DecimalFormat](https://docs.oracle.com/javase/7/docs/api/java/text/DecimalFormat.html)
+
+### Full Example
+```sql
+CSV2J COPY (
+  SELECT 1234567890 AS ID, 1234567890.995 AS AMOUNT, TIMESTAMP '2022-01-31 23:59:58.987' AS DAT_CREATION, DATE '2023-03-11' as DAT_BORN, TIME '21:47:01.001' as TIME_BORN
+  UNION ALL
+  SELECT 1 AS ID, 1.12345 AS AMOUNT, TIMESTAMP '2022-01-31 23:59:58' AS DAT_CREATION, DATE '1978-04-16' as DAT_BORN, TIME '23:35:00' as TIME_BORN
+) TO '/tmp/file.csv' WITH CSV GZIP HEADER
+LANGUAGE 'pt-BR'
+DATETIMEFORMAT 'yyyy-MM-dd HH:mm:ss.SSS'
+DATEFORMAT 'yyyy-MM-dd'
+TIMEFORMAT 'HH:mm:ss.SSS'
+NUMBERFORMAT '#00'
+DECIMALFORMAT '#00.00'
+```
+
 
 ## Using
 

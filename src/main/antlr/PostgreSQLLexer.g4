@@ -2192,6 +2192,41 @@ LOOP
 OPEN
    : 'OPEN'
    ;
+
+ZIP
+   : 'ZIP'
+   ;
+
+GZIP
+   : 'GZIP'
+   ;
+
+BZIP2
+   : 'BZIP2'
+   ;
+
+DATEFORMAT
+   : 'DATEFORMAT'
+   ;
+
+TIMEFORMAT
+   : 'TIMEFORMAT'
+   ;
+
+DATETIMEFORMAT
+   : 'DATETIMEFORMAT'
+   ;
+
+NUMBERFORMAT
+   : 'NUMBERFORMAT'
+   ;
+
+DECIMALFORMAT
+   : 'DECIMALFORMAT'
+   ;
+
+
+
    //
 
    // IDENTIFIERS (4.1.1)

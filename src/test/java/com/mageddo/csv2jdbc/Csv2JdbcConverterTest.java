@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class Csv2JdbcConverterTest {
 
+  final String FRUITFILEPATH = System.getProperty("os.name").toLowerCase().startsWith("win") ? "\\tmp\\fruit.csv" : "/tmp/fruit.csv";
+
   @Test
   void mustParseCsvLoadToTableStmt(){
 
@@ -28,7 +30,7 @@ class Csv2JdbcConverterTest {
     assertEquals(';', csvStatement.getDelimiter());
     assertEquals("FRUIT_TABLE", csvStatement.getTableName());
     assertEquals("[]", csvStatement.getCols().toString());
-    assertEquals("/tmp/fruit.csv", String.valueOf(csvStatement.getFile()));
+    assertEquals(FRUITFILEPATH, String.valueOf(csvStatement.getFile()));
     assertEquals("UTF-8", csvStatement.getCharset().displayName());
     assertTrue(csvStatement.hasHeader());
 
@@ -84,7 +86,7 @@ class Csv2JdbcConverterTest {
     assertNull(csvStatement.getTableName());
     assertFalse(csvStatement.mustCreateTable());
     assertEquals("[]", csvStatement.getCols().toString());
-    assertEquals("/tmp/fruit.csv", String.valueOf(csvStatement.getFile()));
+    assertEquals(FRUITFILEPATH, String.valueOf(csvStatement.getFile()));
     assertEquals("UTF-8", csvStatement.getCharset().displayName());
     assertTrue(csvStatement.hasHeader());
   }

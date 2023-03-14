@@ -660,9 +660,18 @@ copy2csv_opt_list
 copy2csv_opt_item
    : DELIMITER sconst
    | CSV
+   | GZIP
+   | ZIP
+   | BZIP2
    | HEADER_P
    | CREATE_TABLE_P
    | ENCODING sconst
+   | LANGUAGE sconst
+   | DATEFORMAT sconst
+   | TIMEFORMAT sconst
+   | DATETIMEFORMAT sconst
+   | NUMBERFORMAT sconst
+   | DECIMALFORMAT sconst
    ;
 
 createstmt
