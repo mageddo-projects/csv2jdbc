@@ -662,6 +662,7 @@ copy2csv_opt_item
    | CSV
    | GZIP
    | ZIP
+   | BZIP2
    | HEADER_P
    | CREATE_TABLE_P
    | ENCODING sconst

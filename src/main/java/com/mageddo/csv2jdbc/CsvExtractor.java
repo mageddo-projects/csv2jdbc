@@ -8,6 +8,7 @@ import org.apache.commons.csv.CSVPrinter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,6 +28,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import static com.mageddo.csv2jdbc.CopyCsvStatement.Option.GZIP;
 import static com.mageddo.csv2jdbc.CopyCsvStatement.Option.ZIP;
+import static com.mageddo.csv2jdbc.CopyCsvStatement.Option.BZIP2;
 
 public class CsvExtractor implements Csv2JdbcPreparedStatement.Consumer<ResultSet> {
 
@@ -84,6 +86,12 @@ public class CsvExtractor implements Csv2JdbcPreparedStatement.Consumer<ResultSe
       final ZipEntry zeCsv = new ZipEntry( file.getFileName().toString() );
       zipout.putNextEntry(zeCsv);
       appendableOut = new OutputStreamWriter(zipout, this.charset );
+    } else if( this.compression.equalsIgnoreCase(BZIP2) ) {
+      Constructor<?> constructor = Class.forName("org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream").getConstructor(OutputStream.class);
+      Path bz2File = file.resolveSibling( fileName + ".bz2" );
+      final OutputStream outs = java.nio.file.Files.newOutputStream( bz2File );
+      final OutputStream bz2out = (OutputStream) constructor.newInstance( outs );
+      appendableOut = new OutputStreamWriter(bz2out, this.charset );
     } else {
       appendableOut = java.nio.file.Files.newBufferedWriter( file, this.charset );
     }

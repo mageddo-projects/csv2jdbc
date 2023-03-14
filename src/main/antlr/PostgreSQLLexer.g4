@@ -2201,6 +2201,10 @@ GZIP
    : 'GZIP'
    ;
 
+BZIP2
+   : 'BZIP2'
+   ;
+
 DATEFORMAT
    : 'DATEFORMAT'
    ;

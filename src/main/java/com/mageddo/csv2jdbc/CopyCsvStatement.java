@@ -91,9 +91,14 @@ public class CopyCsvStatement {
     return this.options.containsKey(Option.GZIP);
   }
 
+  public boolean isBZIP2() {
+    return this.options.containsKey(Option.BZIP2);
+  }
+
   public String getCompression() {
     if( isGZIP() ) return Option.GZIP;
     if( isZIP() ) return Option.ZIP;
+    if( isBZIP2() ) return Option.BZIP2;
     return "";
   }
 
@@ -139,6 +144,8 @@ public class CopyCsvStatement {
     public static final String ZIP = "ZIP";
 
     public static final String GZIP = "GZIP";
+
+    public static final String BZIP2 = "BZIP2";
 
     public static final String LANGUAGE = "LANGUAGE";
 
