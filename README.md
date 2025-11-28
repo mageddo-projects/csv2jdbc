@@ -32,7 +32,7 @@ or any other SQL client software application which supports jdbc drivers, use th
 * Connection URL: 
   * Template: `jdbc:csv2jdbc:${TARGET_DB_JDBC_URL}?delegateDriverClassName=${TARGET_DATABSE_DRIVER_CLASS_NAME}`
   * H2 example: `jdbc:csv2jdbc:h2:mem:testdb?delegateDriverClassName=org.h2.Driver` 
-  * Postgres example: `jdbc:postgresql://localhost:5432/db?currentSchema=public&delegateDriverClassName=org.postgresql.Driver` 
+  * Postgres example: `jdbc:csv2jdbc:postgresql://localhost:5432/db?currentSchema=public&delegateDriverClassName=org.postgresql.Driver` 
 * Username and password: As usual
 
 ### Configuring in your app 
